@@ -25,16 +25,16 @@
             android:theme="@style/AppTheme.NoActionBar" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="MainActivity" />
+                android:value="com.example.drock.n_corder.MainActivity" />
         </activity>
         <activity
-            android:name=".BlankActivity"
-            android:label="@string/title_activity_blank"
+            android:name=".AndroidSensorListActivity"
+            android:label="@string/title_activity_android_sensors"
             android:parentActivityName=".MainActivity"
             android:theme="@style/AppTheme.NoActionBar" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="MainActivity" />
+                android:value="com.example.drock.n_corder.MainActivity" />
         </activity>
         <activity
             android:name=".ConnectIOIOActivity"
@@ -44,6 +44,14 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.drock.n_corder.MainActivity" />
+        </activity>
+        <activity
+            android:name=".OnboardSensorActivity"
+            android:label="@string/title_activity_onboard_sensor"
+            android:theme="@style/AppTheme.NoActionBar" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.drock.n_corder.AndroidSensorListActivity" />
         </activity>
     </application>
 

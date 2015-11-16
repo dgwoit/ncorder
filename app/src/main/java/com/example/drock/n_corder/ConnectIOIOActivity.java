@@ -2,9 +2,13 @@ package com.example.drock.n_corder;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
+import ioio.lib.api.AnalogInput;
 import ioio.lib.api.DigitalOutput;
 import ioio.lib.api.exception.ConnectionLostException;
 import ioio.lib.util.BaseIOIOLooper;
@@ -16,6 +20,7 @@ import ioio.lib.api.IOIO.VersionType;
 
 public class ConnectIOIOActivity extends IOIOActivity {
     private ToggleButton mButton;
+    private TextView mTV;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,6 +28,7 @@ public class ConnectIOIOActivity extends IOIOActivity {
         setContentView(R.layout.activity_connect_ioio);
 
         mButton = (ToggleButton) findViewById(R.id.button);
+        mTV = (TextView) findViewById(R.id.value_text);
     }
 
     /**
@@ -35,6 +41,7 @@ public class ConnectIOIOActivity extends IOIOActivity {
     class Looper extends BaseIOIOLooper {
         /** The on-board LED. */
         private DigitalOutput mLed;
+        private AnalogInput mInput;
 
         /**
          * Called every time a connection with IOIO has been established.
@@ -49,6 +56,7 @@ public class ConnectIOIOActivity extends IOIOActivity {
         protected void setup() throws ConnectionLostException {
             showVersions(ioio_, "IOIO connected!");
             mLed = ioio_.openDigitalOutput(0, true);
+            mInput = ioio_.openAnalogInput(38);
             enableUi(true);
         }
 
@@ -65,6 +73,7 @@ public class ConnectIOIOActivity extends IOIOActivity {
         @Override
         public void loop() throws ConnectionLostException, InterruptedException {
             mLed.write(!mButton.isChecked());
+            setValue(mInput.read());
             Thread.sleep(100);
         }
 
@@ -141,5 +150,19 @@ public class ConnectIOIOActivity extends IOIOActivity {
                 }
             }
         });
+    }
+
+    private void setValue(float value) {
+        try {
+            final String str = String.format("%f", value);
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    mTV.setText(str);
+                }
+            });
+        } catch (Exception e){
+            Log.e("ConnectIOIOActivity", "error setting value");
+        }
     }
 }

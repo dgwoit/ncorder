@@ -6,6 +6,7 @@ import android.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 
 /**
@@ -26,5 +27,9 @@ public class ConnectIOIOFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_connect_ioio, container, false);
     }
 
-
+    public void setValue(float value) {
+        View v = getView();
+        TextView tv = (TextView)v.findViewById(R.id.value_text);
+        tv.setText(String.format("%f", value));
+    }
 }
