@@ -15,8 +15,6 @@ import android.widget.ListAdapter;
 import android.widget.TextView;
 import android.support.v4.app.Fragment;
 
-import com.example.drock.n_corder.dummy.DummyContent;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,7 +27,7 @@ import java.util.List;
  * Activities containing this fragment MUST implement the {@link OnFragmentInteractionListener}
  * interface.
  */
-public class ItemFragment extends Fragment implements AbsListView.OnItemClickListener {
+public class SensorListItemFragment extends Fragment implements AbsListView.OnItemClickListener {
     protected class SensorItem {
         Sensor mSensor;
 
@@ -68,21 +66,21 @@ public class ItemFragment extends Fragment implements AbsListView.OnItemClickLis
     private ListAdapter mAdapter;
 
     // TODO: Rename and change types of parameters
-    /*public static ItemFragment newInstance(StringArray sensorNames) {
-        ItemFragment fragment = new ItemFragment();
+    public static SensorListItemFragment newInstance() {
+        SensorListItemFragment fragment = new SensorListItemFragment();
         Bundle args = new Bundle();
-        args.putStringArray(ARG_SENSOR_LIST, );
+        /*args.putStringArray(ARG_SENSOR_LIST, );
         args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
+        args.putString(ARG_PARAM2, param2);*/
         fragment.setArguments(args);
         return fragment;
-    }*/
+    }
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
      */
-    public ItemFragment() {
+    public SensorListItemFragment() {
 
     }
 
@@ -143,7 +141,8 @@ public class ItemFragment extends Fragment implements AbsListView.OnItemClickLis
         if (null != mListener) {
             // Notify the active callbacks interface (the activity, if the
             // fragment is attached to one) that an item has been selected.
-            mListener.onFragmentInteraction(DummyContent.ITEMS.get(position).id);
+            ;
+            mListener.onFragmentInteraction(((SensorItem)(mAdapter.getItem(position))).toString());
         }
     }
 

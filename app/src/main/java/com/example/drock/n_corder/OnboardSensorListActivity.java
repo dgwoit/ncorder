@@ -27,4 +27,5 @@ public class OnboardSensorListActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
+
 }

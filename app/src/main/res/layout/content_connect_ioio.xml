@@ -9,13 +9,12 @@
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:showIn="@layout/activity_connect_ioio"
     tools:context="com.example.drock.n_corder.ConnectIOIOActivity">
-    <ToggleButton android:text="ToggleButton" android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/button" android:enabled="false"></ToggleButton>
     <TextView
         android:layout_width="match_parent"
         android:layout_height="100sp"
         android:gravity="center" android:layout_centerHorizontal="true" android:layout_centerVertical="true"
         android:paddingTop="20sp"
         android:textSize="60sp"
-        android:text="--.---"
+        android:text="Connecting to IOIO"
         android:id="@+id/value_text"/>
 </RelativeLayout>

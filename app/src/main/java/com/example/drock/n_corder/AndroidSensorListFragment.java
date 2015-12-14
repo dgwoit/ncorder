@@ -15,8 +15,6 @@ import android.widget.ListAdapter;
 import android.widget.TextView;
 import android.support.v4.app.Fragment;
 
-import com.example.drock.n_corder.dummy.DummyContent;
-
 import java.util.ArrayList;
 import java.util.List;
 

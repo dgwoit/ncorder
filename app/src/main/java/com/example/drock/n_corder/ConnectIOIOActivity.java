@@ -1,168 +1,128 @@
 package com.example.drock.n_corder;
 
+import android.app.Activity;
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
-import android.util.Log;
-import android.widget.TextView;
-import android.widget.Toast;
-import android.widget.ToggleButton;
+import android.os.IBinder;
+import android.view.WindowManager;
 
-import ioio.lib.api.AnalogInput;
-import ioio.lib.api.DigitalOutput;
-import ioio.lib.api.exception.ConnectionLostException;
-import ioio.lib.util.BaseIOIOLooper;
-import ioio.lib.util.IOIOLooper;
-import ioio.lib.util.android.IOIOActivity;
 import ioio.lib.api.IOIO;
-import ioio.lib.api.IOIO.VersionType;
+import ioio.lib.api.exception.ConnectionLostException;
 
 
-public class ConnectIOIOActivity extends IOIOActivity {
-    private ToggleButton mButton;
-    private TextView mTV;
+public class ConnectIOIOActivity extends Activity {
+    private IOIOAccessService mBoundService;
+    private boolean mIsBound = false;
+    private static final String IOIO = "IOIO";
+    public static final String CONNECTION_ID = "connection-id";
+    public static final String SENSOR_NAME = "sensor-name";
+    private final String CONNECT_IOIO_ACTIVITY = "ConnectIOIOActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_connect_ioio);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
-        mButton = (ToggleButton) findViewById(R.id.button);
-        mTV = (TextView) findViewById(R.id.value_text);
+        String connectionId;
+        String sensorName;
+        if(null != savedInstanceState) {
+            connectionId = savedInstanceState.getString(CONNECTION_ID);
+            sensorName = savedInstanceState.getString(SENSOR_NAME);
+        } else {
+            Intent intent = getIntent();
+            connectionId = intent.getStringExtra(CONNECTION_ID);
+            sensorName = intent.getStringExtra(SENSOR_NAME);
+        }
+
+        IOIODeviceDriverManager drvMan = IOIODeviceDriverManager.getInstance();
+        drvMan.BeginConnectToDevice(sensorName, connectionId);
+//        IOIOConnectionTable connectionInfoTable = new IOIOConnectionTable();
+//        IOIOConnectionInfo connectionInfo = connectionInfoTable.getConnectionInfo(connectionId);
+//        int basePin = connectionInfo.getPin();
+//        AnalogPinReader driver = new AnalogPinReader(basePin);
+ //       SensorStreamBroker streamBroker = SensorStreamBroker.getInstance();
+ //       streamBroker.RegisterStream(IOIO, driver);
+        IOIODeviceDriver senseConnectionDriver = new IOIODeviceDriver() {
+            @Override
+            public void Realize(ioio.lib.api.IOIO ioio) throws ConnectionLostException {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Intent intent = new Intent(ConnectIOIOActivity.this, DataViewActivity.class);
+                        intent.putExtra(DataViewActivity.STREAM_NAME, IOIO);
+                        startActivity(intent);
+                    }
+                });
+            }
+
+            @Override
+            public void Update() {
+                //does nothing
+            }
+        };
+        drvMan.AssignDriver(CONNECT_IOIO_ACTIVITY, senseConnectionDriver);
+//        drvMan.AssignDriver(connectionId, driver);
+        startService(new Intent(this, IOIOAccessService.class));
+
+        doBindService();
     }
 
-    /**
-     * This is the thread on which all the IOIO activity happens. It will be run
-     * every time the application is resumed and aborted when it is paused. The
-     * method setup() will be called right after a connection with the IOIO has
-     * been established (which might happen several times!). Then, loop() will
-     * be called repetitively until the IOIO gets disconnected.
-     */
-    class Looper extends BaseIOIOLooper {
-        /** The on-board LED. */
-        private DigitalOutput mLed;
-        private AnalogInput mInput;
-
-        /**
-         * Called every time a connection with IOIO has been established.
-         * Typically used to open pins.
-         *
-         * @throws ConnectionLostException
-         *             When IOIO connection is lost.
-         *
-         * @see ioio.lib.util.IOIOLooper#setup()
-         */
-        @Override
-        protected void setup() throws ConnectionLostException {
-            showVersions(ioio_, "IOIO connected!");
-            mLed = ioio_.openDigitalOutput(0, true);
-            mInput = ioio_.openAnalogInput(38);
-            enableUi(true);
-        }
-
-        /**
-         * Called repetitively while the IOIO is connected.
-         *
-         * @throws ConnectionLostException
-         *             When IOIO connection is lost.
-         * @throws InterruptedException
-         * 				When the IOIO thread has been interrupted.
-         *
-         * @see ioio.lib.util.IOIOLooper#loop()
-         */
-        @Override
-        public void loop() throws ConnectionLostException, InterruptedException {
-            mLed.write(!mButton.isChecked());
-            setValue(mInput.read());
-            Thread.sleep(100);
-        }
-
-        /**
-         * Called when the IOIO is disconnected.
-         *
-         * @see ioio.lib.util.IOIOLooper#disconnected()
-         */
-        @Override
-        public void disconnected() {
-            enableUi(false);
-            toast("IOIO disconnected");
-        }
-
-        /**
-         * Called when the IOIO is connected, but has an incompatible firmware version.
-         *
-         * @see ioio.lib.util.IOIOLooper#incompatible(IOIO)
-         */
-        @Override
-        public void incompatible() {
-            showVersions(ioio_, "Incompatible firmware version!");
-        }
-    }
-
-    /**
-     * A method to create our IOIO thread.
-     *
-     * @see ioio.lib.util.AbstractIOIOActivity#createIOIOThread()
-     */
     @Override
-    protected IOIOLooper createIOIOLooper() {
-        return new Looper();
+    protected void onDestroy() {
+        super.onDestroy();
+        doUnbindService();
     }
 
-    private void showVersions(IOIO ioio, String title) {
-        toast(String.format("%s\n" +
-                        "IOIOLib: %s\n" +
-                        "Application firmware: %s\n" +
-                        "Bootloader firmware: %s\n" +
-                        "Hardware: %s",
-                title,
-                ioio.getImplVersion(VersionType.IOIOLIB_VER),
-                ioio.getImplVersion(VersionType.APP_FIRMWARE_VER),
-                ioio.getImplVersion(VersionType.BOOTLOADER_VER),
-                ioio.getImplVersion(VersionType.HARDWARE_VER)));
-    }
-
-    private void toast(final String message) {
-        final Context context = this;
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(context, message, Toast.LENGTH_LONG).show();
-            }
-        });
-    }
-
-    private int numConnected_ = 0;
-
-    private void enableUi(final boolean enable) {
-        // This is slightly trickier than expected to support a multi-IOIO use-case.
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                if (enable) {
-                    if (numConnected_++ == 0) {
-                        mButton.setEnabled(true);
-                    }
-                } else {
-                    if (--numConnected_ == 0) {
-                        mButton.setEnabled(false);
-                    }
-                }
-            }
-        });
-    }
-
-    private void setValue(float value) {
-        try {
-            final String str = String.format("%f", value);
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    mTV.setText(str);
-                }
-            });
-        } catch (Exception e){
-            Log.e("ConnectIOIOActivity", "error setting value");
+    private ServiceConnection mConnection = new ServiceConnection() {
+        public void onServiceConnected(ComponentName className, IBinder service) {
+            // This is called when the connection with the service has been
+            // established, giving us the service object we can use to
+            // interact with the service.  Because we have bound to a explicit
+            // service that we know is running in our own process, we can
+            // cast its IBinder to a concrete class and directly access it.
+            mBoundService = ((IOIOAccessService.LocalBinder)service).getService();
         }
+
+        public void onServiceDisconnected(ComponentName className) {
+            // This is called when the connection with the service has been
+            // unexpectedly disconnected -- that is, its process crashed.
+            // Because it is running in our same process, we should never
+            // see this happen.
+            mBoundService = null;
+        }
+    };
+
+    void doBindService() {
+        // Establish a connection with the service.  We use an explicit
+        // class name because we want a specific service implementation that
+        // we know will be running in our own process (and thus won't be
+        // supporting component replacement by other applications).
+        bindService(new Intent(ConnectIOIOActivity.this,
+                IOIOAccessService.class), mConnection, Context.BIND_AUTO_CREATE);
+        mIsBound = true;
+    }
+
+    void doUnbindService() {
+        if (mIsBound) {
+            // Detach our existing connection.
+            unbindService(mConnection);
+            mIsBound = false;
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        //doBindService();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        //doUnbindService();
     }
 }
