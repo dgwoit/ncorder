@@ -52,8 +52,8 @@ public class ConnectIOIOActivity extends Activity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        Intent intent = new Intent(ConnectIOIOActivity.this, DataViewActivity.class);
-                        intent.putExtra(DataViewActivity.STREAM_NAME, IOIO);
+                        Intent intent = new Intent(ConnectIOIOActivity.this, ViewTypeActivity.class);
+                        intent.putExtra(ParamNames.STREAM_NAME, IOIO);
                         startActivity(intent);
                     }
                 });

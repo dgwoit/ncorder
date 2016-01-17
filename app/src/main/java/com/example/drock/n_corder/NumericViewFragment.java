@@ -121,7 +121,7 @@ public class NumericViewFragment extends android.support.v4.app.Fragment impleme
     // from MeasurementSink
     @Override
     public boolean update(Measurement m) {
-        return setValue(m.getGalue());
+        return setValue(m.getValue());
     }
 
     float mValue = 0;
@@ -140,7 +140,7 @@ public class NumericViewFragment extends android.support.v4.app.Fragment impleme
             }
             return true;
         } catch (Exception e){
-            Log.e("ConnectIOIOActivity", "error setting value");
+            Log.e("NumericViewFragment", "error setting value");
             return false;
         }
     }

@@ -42,7 +42,7 @@ public class IOIOConnectionsListFragment extends ListFragmentBase {
 
     // TODO: Customize parameter initialization
     @SuppressWarnings("unused")
-    public static IOIOConnectionsListFragment newInstance(List<ListItem> items) {
+    public static IOIOConnectionsListFragment newInstance() {
         IOIOConnectionsListFragment fragment = new IOIOConnectionsListFragment();
         Bundle args = new Bundle();
         //args.putInt(ARG_COLUMN_COUNT, columnCount);

@@ -8,8 +8,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.WindowManager;
 
 public class DataViewActivity extends AppCompatActivity {
-    public static final String STREAM_NAME = "streamName";
     private String mStreamName;
+    private String mDisplayParams;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,10 +22,12 @@ public class DataViewActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         if(null != savedInstanceState) {
-            mStreamName = savedInstanceState.getString(STREAM_NAME);
+            mStreamName = savedInstanceState.getString(ParamNames.STREAM_NAME);
+            mDisplayParams = savedInstanceState.getString(ParamNames.DISPLAY_PARAMS);
         } else {
             Intent intent = getIntent();
-            mStreamName = intent.getStringExtra(STREAM_NAME);
+            mStreamName = intent.getStringExtra(ParamNames.STREAM_NAME);
+            mDisplayParams = intent.getStringExtra(ParamNames.DISPLAY_PARAMS);
         }
 
         android.support.v4.app.FragmentManager fm = getSupportFragmentManager();
@@ -45,6 +47,7 @@ public class DataViewActivity extends AppCompatActivity {
     }
 
     protected Fragment createFragment() {
-        return NumericViewFragment.newInstance(mStreamName);
+        DataViewFactory factory = new DataViewFactory();
+        return factory.createFragment(mDisplayParams, mStreamName);
     }
 }

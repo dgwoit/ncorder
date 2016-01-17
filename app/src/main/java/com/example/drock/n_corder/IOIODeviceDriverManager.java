@@ -36,22 +36,34 @@ public class IOIODeviceDriverManager {
 
     void loadDriverInfos() {
         driverInfos = new LinkedList<IOIODeviceDriverInfo>();
-        driverInfos.add(new IOIODeviceDriverInfo("Seeed Hi Temp Probe", IOIOConnectionInfo.BUS_TYPE_A2D, new IOIODeviceDriverInfo.DriverInstantiator() {
+        driverInfos.add(new IOIODeviceDriverInfo("Grove Hi Temp Probe - high temp", IOIOConnectionInfo.BUS_TYPE_A2D, new IOIODeviceDriverInfo.DriverInstantiator() {
             @Override
             public IOIODeviceDriver createInstance(int basePin) {
-                return new SeeedHiTempThermocouple(basePin);
+                return new GroveHiTempThermocouple(basePin, false);
             }
         }) );
-        driverInfos.add(new IOIODeviceDriverInfo("Seeed Differential Amplifier", IOIOConnectionInfo.BUS_TYPE_A2D, new IOIODeviceDriverInfo.DriverInstantiator() {
+        driverInfos.add(new IOIODeviceDriverInfo("Grove Hi Temp Probe - ambient temp", IOIOConnectionInfo.BUS_TYPE_A2D, new IOIODeviceDriverInfo.DriverInstantiator() {
             @Override
             public IOIODeviceDriver createInstance(int basePin) {
-                return new SeeedDifferentialAmplifier(basePin);
+                return new GroveHiTempThermocouple(basePin, true);
+            }
+        }) );
+        driverInfos.add(new IOIODeviceDriverInfo("Grove Differential Amplifier", IOIOConnectionInfo.BUS_TYPE_A2D, new IOIODeviceDriverInfo.DriverInstantiator() {
+            @Override
+            public IOIODeviceDriver createInstance(int basePin) {
+                return new GroveDifferentialAmplifier(basePin);
             }
         }));
         driverInfos.add(new IOIODeviceDriverInfo("Analog Reader", IOIOConnectionInfo.BUS_TYPE_A2D, new IOIODeviceDriverInfo.DriverInstantiator() {
             @Override
             public IOIODeviceDriver createInstance(int basePin) {
                 return new AnalogPinReader(basePin);
+            }
+        }));
+        driverInfos.add(new IOIODeviceDriverInfo("Grove Load Cell", IOIOConnectionInfo.BUS_TYPE_A2D, new IOIODeviceDriverInfo.DriverInstantiator() {
+            @Override
+            public IOIODeviceDriver createInstance(int basePin) {
+                return new GroveLoadCell(basePin);
             }
         }));
     }

@@ -102,8 +102,8 @@ public class AndroidSensorConfigurationActivity extends AppCompatActivity implem
     public void onListFragmentInteraction(AndroidSensorDetailFragment.ListItem item) {
         mBoundService.BindSensor(item.getSensorType(), item.getValueSelector());
 
-        Intent intent = new Intent(this, DataViewActivity.class);
-        intent.putExtra(DataViewActivity.STREAM_NAME, "Android");
+        Intent intent = new Intent(this, ViewTypeActivity.class);
+        intent.putExtra(ParamNames.STREAM_NAME, "Android");
         startActivity(intent);
     }
 }

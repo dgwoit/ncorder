@@ -12,7 +12,7 @@ public class Measurement {
     public void setValue(float v) {
         this.value = v;
     }
-    public float getGalue() {
+    public float getValue() {
         return this.value;
     }
 }
