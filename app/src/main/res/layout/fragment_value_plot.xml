@@ -12,7 +12,6 @@
         android:background="#000"
         android:paddingBottom="40dp"
         android:paddingLeft="20dp"
-        app:exampleColor="#33b5e5"
         app:exampleDimension="24sp"
         app:exampleDrawable="@android:drawable/ic_menu_add"
         app:exampleString="Hello, DataPlotView" />

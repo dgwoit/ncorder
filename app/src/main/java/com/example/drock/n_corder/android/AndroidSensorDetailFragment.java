@@ -1,12 +1,19 @@
-package com.example.drock.n_corder;
+/*
+* THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED
+* WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
+* FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE AUTHOR OR
+* CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+* CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+* SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+* ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+* NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
+* ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
+package com.example.drock.n_corder.android;
 
 import android.app.Activity;
-import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +22,8 @@ import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
+
+import com.example.drock.n_corder.R;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -47,12 +56,14 @@ public class AndroidSensorDetailFragment extends Fragment implements AbsListView
         int mSensorType;
         String mValueDescription;
         int mValueSelector;
+        int mUnit;
 
 
-        public ListItem(int sensorType, String valueDescription, int valueSelector) {
+        public ListItem(int sensorType, String valueDescription, int valueSelector, int unit) {
             mSensorType = sensorType;
             mValueDescription = valueDescription;
             mValueSelector = valueSelector;
+            mUnit = unit;
         }
 
         @Override
@@ -62,6 +73,7 @@ public class AndroidSensorDetailFragment extends Fragment implements AbsListView
 
         public int getSensorType() { return mSensorType; }
         public int getValueSelector() { return mValueSelector; }
+        public int getUnit() { return mUnit; }
     }
 
     /**
@@ -122,7 +134,7 @@ public class AndroidSensorDetailFragment extends Fragment implements AbsListView
         mListItems = new LinkedList<ListItem>();
         for(int i = 0; i < helper.getValueCount(); i++) {
             String description = helper.getValueDescription(i);
-            ListItem item = new ListItem(mSensorType, description, i);
+            ListItem item = new ListItem(mSensorType, description, i, helper.getUnitType());
             mListItems.add(item);
         }
     }

@@ -1,12 +1,26 @@
+/*
+* THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED
+* WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
+* FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE AUTHOR OR
+* CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+* CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+* SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+* ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+* NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
+* ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
 package com.example.drock.n_corder;
+
+import com.example.drock.n_corder.units.DistanceUnits;
+import com.example.drock.n_corder.units.TemperatureUnits;
+import com.example.drock.n_corder.units.UnitConverter;
+import com.example.drock.n_corder.units.UnitConverterFactory;
+import com.example.drock.n_corder.units.Units;
 
 import ioio.lib.api.AnalogInput;
 import ioio.lib.api.IOIO;
 import ioio.lib.api.exception.ConnectionLostException;
 
-/**
- * Created by drock on 11/27/2015.
- */
 public abstract class IOIODeviceDriver {
     public abstract void Realize(IOIO ioio) throws ConnectionLostException;
 
@@ -18,13 +32,16 @@ class AnalogPinReader extends IOIODeviceDriver implements IMeasurementSource
     protected AnalogInput mPin;
     protected int mPinNo;
     protected MeasurementSource dispatcher = new MeasurementSource();
+    protected UnitConverter mUnitConverter;
 
     public AnalogPinReader(int pinNo) {
         this.mPinNo = pinNo;
     }
 
     //measurement publisher methods
-
+    protected int getUnit() {
+        return Units.UNKNOWN;
+    }
 
     @Override
     public void attach(IMeasurementSink sink) {
@@ -43,8 +60,9 @@ class AnalogPinReader extends IOIODeviceDriver implements IMeasurementSource
 
     @Override
      public void Realize(IOIO ioio) throws ConnectionLostException {
-         mPin = ioio.openAnalogInput(this.mPinNo);
-     }
+        mPin = ioio.openAnalogInput(this.mPinNo);
+        mUnitConverter = UnitConverterFactory.newInstance().createUnitConverter(getUnit());
+    }
 
     public float Read() throws ConnectionLostException, InterruptedException {
         return mPin.read();
@@ -54,7 +72,8 @@ class AnalogPinReader extends IOIODeviceDriver implements IMeasurementSource
     public void Update() {
         try {
             float value = Read();
-            update(new Measurement(value));
+            value = mUnitConverter.convert(getUnit(), value);
+            update(new Measurement(value, System.nanoTime(), mUnitConverter.getDefaultUnit()));
         }
         catch(ConnectionLostException e) {
 
@@ -81,9 +100,10 @@ class LowPassFilter {
     public void setAlpha(float value) {
         mAlpha = value;
     }
+    public void setState(float value) { mY = value; }
 
     public float filter(float x) {
-        mY = mAlpha * x - (1 - mAlpha) * mY;
+        mY = mAlpha * x + (1f - mAlpha) * mY;
         return mY;
     }
 }
@@ -94,12 +114,15 @@ class GroveHiTempThermocouple extends IOIODeviceDriver implements IMeasurementSo
     boolean mDefaultToAmbient = false;
     protected MeasurementSource mDispatcher = new MeasurementSource();
     LowPassFilter mFilter = new LowPassFilter();
+    UnitConverter mUnitConverter;
 
     public GroveHiTempThermocouple(int pinNo, boolean ambient) {
         mAmbientTempSensor = new AnalogPinReader(pinNo);
         mHiTempSensor = new AnalogPinReader(pinNo+1);
         mDefaultToAmbient = ambient;
         mFilter.setAlpha(1.0f);
+        UnitConverterFactory f = UnitConverterFactory.newInstance();
+        mUnitConverter = f.createUnitConverter(TemperatureUnits.CELSIUS);
     }
 
     @Override public void Realize(IOIO ioio) throws ConnectionLostException {
@@ -111,11 +134,12 @@ class GroveHiTempThermocouple extends IOIODeviceDriver implements IMeasurementSo
         try {
             float value;
             if(mDefaultToAmbient)
-                value = mAmbientTempSensor.Read();
+                value = mAmbientTempSensor.Read()*100f;
             else {
                 value = getHiTemp();
             }
-            update(new Measurement(value));
+            value = mUnitConverter.convert(TemperatureUnits.CELSIUS, value);
+            update(new Measurement(value, System.nanoTime(), mUnitConverter.getDefaultUnit()));
         }
         catch(Exception e) {
 
@@ -183,5 +207,61 @@ class GroveHiTempThermocouple extends IOIODeviceDriver implements IMeasurementSo
 class GroveLoadCell extends GroveDifferentialAmplifier {
     public GroveLoadCell(int pinNo) {
         super(pinNo);
+
+    }
+
+    @Override
+    protected int getUnit() {
+        return Units.WEIGHT;
+    }
+}
+
+class ACS712CurrentSensor extends AnalogPinReader {
+    LowPassFilter mFilter = new LowPassFilter();
+    final static float READING_BIAS = 0.4894f;
+
+    ACS712CurrentSensor(int pinNo) {
+        super(pinNo + 1);
+        mFilter.setAlpha(0.1f);
+        mFilter.setState(READING_BIAS);
+    }
+
+    @Override
+    protected int getUnit() { return Units.CURRENT; }
+
+    @Override
+    public float Read() throws ConnectionLostException, InterruptedException {
+        float value = super.Read();
+        value = mFilter.filter(value);
+        //return value;
+
+        // value has a positive bias of about 0.5
+        // input voltage from sensor is in the range of 0-5 volts
+        // .185 volts per AMP
+        float current = (value - READING_BIAS) * 5.0f / 0.185f;
+        return current;
+    }
+}
+
+class GroveInfraredProximitySensor extends AnalogPinReader {
+    final static float VREF = 5f;
+
+    static IOIODeviceDriver newInstance(int pinNo) {
+        return new GroveInfraredProximitySensor(pinNo);
+    }
+
+    GroveInfraredProximitySensor(int pinNo) {
+        super(pinNo);
+    }
+
+    @Override
+    public int getUnit() { return DistanceUnits.METERS; }
+
+    @Override
+    public float Read() throws ConnectionLostException, InterruptedException {
+        float value = super.Read();
+        float voltage = value * VREF;
+        float distance = 0.29988f * (float)Math.pow(voltage , -1.173);
+        return distance;
     }
 }

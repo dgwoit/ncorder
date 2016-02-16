@@ -1,4 +1,15 @@
-package com.example.drock.n_corder;
+/*
+* THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED
+* WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
+* FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE AUTHOR OR
+* CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+* CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+* SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+* ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+* NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
+* ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
+package com.example.drock.n_corder.android;
 
 import android.content.ComponentName;
 import android.content.Context;
@@ -6,13 +17,13 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.support.design.widget.CollapsingToolbarLayout;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.View;
+
+import com.example.drock.n_corder.ParamNames;
+import com.example.drock.n_corder.R;
+import com.example.drock.n_corder.ViewTypeActivity;
 
 public class AndroidSensorConfigurationActivity extends AppCompatActivity implements AndroidSensorDetailFragment.OnListFragmentInteractionListener {
     public static final String SENSOR_TYPE = "SENSOR_TYPE";
@@ -100,7 +111,7 @@ public class AndroidSensorConfigurationActivity extends AppCompatActivity implem
 
     @Override
     public void onListFragmentInteraction(AndroidSensorDetailFragment.ListItem item) {
-        mBoundService.BindSensor(item.getSensorType(), item.getValueSelector());
+        mBoundService.BindSensor(item.getSensorType(), item.getValueSelector(), item.getUnit());
 
         Intent intent = new Intent(this, ViewTypeActivity.class);
         intent.putExtra(ParamNames.STREAM_NAME, "Android");

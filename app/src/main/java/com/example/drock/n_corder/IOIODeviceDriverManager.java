@@ -1,5 +1,20 @@
+/*
+* THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED
+* WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
+* FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE AUTHOR OR
+* CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+* CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+* SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+* ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+* NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
+* ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
 package com.example.drock.n_corder;
 
+import android.util.Log;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
@@ -9,12 +24,6 @@ import java.util.TreeSet;
 
 import ioio.lib.api.IOIO;
 import ioio.lib.api.exception.ConnectionLostException;
-
-/**
- * Created by drock on 11/24/2015.
- * Purpose: used to create drivers for devices attached to IOIO pins
- */
-
 
 public class IOIODeviceDriverManager {
     public final static String IOIO = "IOIO"; //default stream identifier
@@ -66,6 +75,36 @@ public class IOIODeviceDriverManager {
                 return new GroveLoadCell(basePin);
             }
         }));
+        driverInfos.add(new IOIODeviceDriverInfo("ACS712 Current Sensor", IOIOConnectionInfo.BUS_TYPE_A2D, new IOIODeviceDriverInfo.DriverInstantiator() {
+            @Override
+            public IOIODeviceDriver createInstance(int basePin) {
+                return new ACS712CurrentSensor(basePin);
+            }
+        }));
+        driverInfos.add(new IOIODeviceDriverInfo("Grove 80cm Infrared Proximity Sensor", IOIOConnectionInfo.BUS_TYPE_A2D, new IOIODeviceDriverInfo.DriverInstantiator() {
+            @Override
+            public IOIODeviceDriver createInstance(int basePin) {
+                try {
+                    //ClassLoader classLoader = ClassLoader.getSystemClassLoader();
+                    //final Class<Object> classToLoad = (Class<Object>) classLoader.loadClass("com.example.drock.n_corder.GroveInfraredProximitySensor");
+                    final Class classToLoad = GroveInfraredProximitySensor.class;
+                    Class[] cArg = new Class[1];
+                    cArg[0] = int.class;
+                    final Method m = classToLoad.getDeclaredMethod("newInstance", cArg);
+                    return (IOIODeviceDriver) m.invoke(null, basePin);
+                } /*catch(ClassNotFoundException x) {
+                    Log.e("IOIODvcDrvInstantiator", String.format("Class Not Found: %s", x.toString()));
+                }*/ catch (NoSuchMethodException x) {
+                    Log.e("IOIODvcDrvInstantiator", String.format("Method No Found: %s", x.toString()));
+                } catch (IllegalAccessException x) {
+                    Log.e("IOIODvcDrvInstantiator", String.format("Illegal Method Access: %s", x.toString()));
+                } catch (InvocationTargetException x) {
+                    Log.e("IOIODvcDrvInstantiator", String.format("Invocation Target Exception: %s", x.toString()));
+                }
+
+                return new GroveInfraredProximitySensor(basePin);
+            }
+        }));
     }
 
     // assigns/associates a driver instance to a connection
@@ -97,13 +136,15 @@ public class IOIODeviceDriverManager {
     public void BeginConnectToDevice(String driverId, String connectionId) {
         IOIOConnectionTable connectionInfoTable = new IOIOConnectionTable();
         IOIOConnectionInfo connectionInfo = connectionInfoTable.getConnectionInfo(connectionId);
-        int basePin = connectionInfo.getPin();
-        for(IOIODeviceDriverInfo entry: driverInfos) {
-            if(entry.getName().compareTo(driverId) == 0) {
-                IOIODeviceDriver driver = entry.createInstance(basePin);
-                SensorStreamBroker streamBroker = SensorStreamBroker.getInstance();
-                streamBroker.RegisterStream(IOIO, (IMeasurementSource)driver);
-                AssignDriver(connectionId, driver);
+        if(connectionInfo != null) {
+            int basePin = connectionInfo.getPin();
+            for (IOIODeviceDriverInfo entry : driverInfos) {
+                if (entry.getName().compareTo(driverId) == 0) {
+                    IOIODeviceDriver driver = entry.createInstance(basePin);
+                    SensorStreamBroker streamBroker = SensorStreamBroker.getInstance();
+                    streamBroker.RegisterStream(IOIO, (IMeasurementSource) driver);
+                    AssignDriver(connectionId, driver);
+                }
             }
         }
     }

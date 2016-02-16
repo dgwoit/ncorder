@@ -9,5 +9,5 @@
     android:layout_marginLeft="16dp"
     android:layout_marginRight="16dp"
     app:layoutManager="LinearLayoutManager"
-    tools:context=".AndroidSensorDetailFragment"
+    tools:context=".android.AndroidSensorDetailFragment"
     tools:listitem="@layout/fragment_android_sensor_detail" />

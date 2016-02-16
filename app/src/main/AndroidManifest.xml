@@ -19,16 +19,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".OnboardSensorList"
-            android:label="@string/title_activity_onboard_sensor_list"
-            android:parentActivityName=".MainActivity"
-            android:theme="@style/AppTheme.NoActionBar">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.example.drock.n_corder.MainActivity" />
-        </activity>
-        <activity
-            android:name=".AndroidSensorListActivity"
+            android:name=".android.AndroidSensorListActivity"
             android:label="@string/title_activity_android_sensors"
             android:parentActivityName=".MainActivity"
             android:theme="@style/AppTheme.NoActionBar">
@@ -40,7 +31,8 @@
             android:name=".ConnectIOIOActivity"
             android:label="@string/title_activity_connect_ioio"
             android:parentActivityName=".MainActivity"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme.NoActionBar"
+            android:noHistory="true"  >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.drock.n_corder.MainActivity" />
@@ -52,7 +44,7 @@
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.example.drock.n_corder.AndroidSensorListActivity" />
+                android:value=".android.AndroidSensorListActivity" />
         </activity>
         <activity
             android:name=".DataViewActivity"
@@ -87,18 +79,18 @@
             android:enabled="true"
             android:exported="false" />
         <service
-            android:name=".AndroidSensorService"
+            android:name=".android.AndroidSensorService"
             android:enabled="true"
             android:exported="false" />
 
         <activity
-            android:name=".AndroidSensorConfigurationActivity"
+            android:name=".android.AndroidSensorConfigurationActivity"
             android:label="@string/title_activity_android_sensor_configuration"
-            android:parentActivityName=".AndroidSensorListActivity"
+            android:parentActivityName=".android.AndroidSensorListActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.example.drock.n_corder.AndroidSensorListActivity" />
+                android:value=".android.AndroidSensorListActivity" />
         </activity>
         <activity
             android:name=".IOIOConfigureConnectionActivity"
@@ -121,8 +113,17 @@
         <activity
             android:name=".ViewTypeActivity"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme.NoActionBar"
+            android:parentActivityName=".MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.drock.n_corder.MainActivity" />
         </activity>
+        <!-- ATTENTION: This was auto-generated to add Google Play services to your project for
+             App Indexing.  See https://g.co/AppIndexing/AndroidStudio for more information. -->
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
     </application>
 
 </manifest>

@@ -8,10 +8,5 @@
         android:layout_height="match_parent"
         android:background="#00F"
         android:paddingBottom="40dp"
-        android:paddingLeft="20dp"
-        app:exampleColor="#0000FF"
-        app:exampleDimension="24sp"
-        app:exampleDrawable="@android:drawable/ic_menu_add"
-        app:exampleString="Hello, DataPlotView" />
-
+        android:paddingLeft="20dp" />
 </FrameLayout>

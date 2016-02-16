@@ -1,3 +1,14 @@
+/*
+* THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED
+* WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
+* FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE AUTHOR OR
+* CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+* CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+* SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+* ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+* NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
+* ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
 package com.example.drock.n_corder;
 
 
@@ -40,6 +51,7 @@ public class ValuePlotFragment extends Fragment implements IMeasurementSink {
      */
     // TODO: Rename and change types and number of parameters
     public static ValuePlotFragment newInstance(String streamName) {
+        assert !streamName.isEmpty();
         ValuePlotFragment fragment = new ValuePlotFragment();
         Bundle args = new Bundle();
         args.putString(ARG_STREAM_NAME, streamName);
@@ -79,13 +91,15 @@ public class ValuePlotFragment extends Fragment implements IMeasurementSink {
     }
 
     private synchronized void addMeasurement(Measurement m) {
-        if(mMeasurements != null) {
-            mMeasurements.add(m);
-            while(mMeasurements.size() > 10000) //use hard-coded value for now
-                mMeasurements.remove(0);
+        synchronized (mMeasurements) {
+            if (mMeasurements != null) {
+                mMeasurements.add(m);
+                while (mMeasurements.size() > 10000) //use hard-coded value for now
+                    mMeasurements.remove(0);
 
-            if(mDataView != null)
-                mDataView.onDataChanged();
+                if (mDataView != null)
+                    mDataView.onDataChanged();
+            }
         }
     }
 }
