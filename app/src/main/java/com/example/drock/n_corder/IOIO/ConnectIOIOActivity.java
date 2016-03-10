@@ -9,7 +9,7 @@
 * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-package com.example.drock.n_corder;
+package com.example.drock.n_corder.IOIO;
 
 import android.app.Activity;
 import android.content.ComponentName;
@@ -21,11 +21,13 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.view.WindowManager;
 
+import com.example.drock.n_corder.ParamNames;
+import com.example.drock.n_corder.R;
+import com.example.drock.n_corder.ViewTypeActivity;
 import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.common.api.GoogleApiClient;
 
-import ioio.lib.api.IOIO;
 import ioio.lib.api.exception.ConnectionLostException;
 
 
@@ -47,6 +49,7 @@ public class ConnectIOIOActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        stopService(new Intent(this, IOIOAccessService.class));
         setContentView(R.layout.activity_connect_ioio);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 

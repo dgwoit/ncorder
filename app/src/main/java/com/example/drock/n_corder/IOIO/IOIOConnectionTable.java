@@ -9,7 +9,9 @@
 * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-package com.example.drock.n_corder;
+package com.example.drock.n_corder.IOIO;
+
+import com.example.drock.n_corder.IOIO.IOIOConnectionInfo;
 
 import java.util.LinkedList;
 import java.util.List;

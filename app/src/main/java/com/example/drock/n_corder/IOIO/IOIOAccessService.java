@@ -9,15 +9,15 @@
 * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-package com.example.drock.n_corder;
+package com.example.drock.n_corder.IOIO;
 
 import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
 import android.app.NotificationManager;
-import android.widget.Toast;
 
-import ioio.lib.api.AnalogInput;
+import com.example.drock.n_corder.R;
+
 import ioio.lib.api.DigitalOutput;
 import ioio.lib.api.IOIO;
 import ioio.lib.api.exception.ConnectionLostException;
@@ -85,7 +85,7 @@ public class IOIOAccessService extends IOIOService {
     }
 
     public class LocalBinder extends Binder {
-        IOIOAccessService getService() {
+        public IOIOAccessService getService() {
             return IOIOAccessService.this;
         }
     }

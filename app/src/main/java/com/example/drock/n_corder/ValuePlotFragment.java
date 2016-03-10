@@ -22,6 +22,8 @@ import android.view.ViewGroup;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
 
 
 /**
@@ -29,13 +31,12 @@ import java.util.List;
  * Use the {@link ValuePlotFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class ValuePlotFragment extends Fragment implements IMeasurementSink {
+public class ValuePlotFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_STREAM_NAME = "streamName";
 
     private String mStreamName;
-    private List<Measurement> mMeasurements = new LinkedList<Measurement>();
     private DataPlotView mDataView;
 
     public ValuePlotFragment() {
@@ -49,7 +50,6 @@ public class ValuePlotFragment extends Fragment implements IMeasurementSink {
      * @param streamName name of stream to bind to
      * @return A new instance of fragment ValuePlotFragment.
      */
-    // TODO: Rename and change types and number of parameters
     public static ValuePlotFragment newInstance(String streamName) {
         assert !streamName.isEmpty();
         ValuePlotFragment fragment = new ValuePlotFragment();
@@ -65,9 +65,6 @@ public class ValuePlotFragment extends Fragment implements IMeasurementSink {
         if (getArguments() != null) {
             mStreamName = getArguments().getString(ARG_STREAM_NAME);
         }
-
-
-        SensorStreamBroker.getInstance().AttachToStream(this, mStreamName);
     }
 
     @Override
@@ -77,29 +74,16 @@ public class ValuePlotFragment extends Fragment implements IMeasurementSink {
         View view = inflater.inflate(R.layout.fragment_value_plot, container, false);
         mDataView = (DataPlotView)view.findViewById(R.id.data_plot_view);
         if(mDataView != null) {
-            mDataView.attachDataSource(mMeasurements);
+            List<Measurement> data = MeasurementDataStore.getInstance().getData();
+            mDataView.attachDataSource(data);
+            Observer observer = new Observer() {
+                @Override
+                public void update(Observable observable, Object data) {
+                    mDataView.onDataChanged();
+                }
+            };
+            MeasurementDataStore.getInstance().addObserver(observer);
         }
         return view;
-    }
-
-    // from MeasurementSink
-    @Override
-    public boolean update(Measurement m) {
-        addMeasurement(m);
-
-        return true;
-    }
-
-    private synchronized void addMeasurement(Measurement m) {
-        synchronized (mMeasurements) {
-            if (mMeasurements != null) {
-                mMeasurements.add(m);
-                while (mMeasurements.size() > 10000) //use hard-coded value for now
-                    mMeasurements.remove(0);
-
-                if (mDataView != null)
-                    mDataView.onDataChanged();
-            }
-        }
     }
 }

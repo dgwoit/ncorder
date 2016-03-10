@@ -19,6 +19,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.content.Intent;
 
+import com.example.drock.n_corder.IOIO.IOIOConfigureConnectionActivity;
 import com.example.drock.n_corder.android.AndroidSensorListActivity;
 
 public class MainActivity extends AppCompatActivity {

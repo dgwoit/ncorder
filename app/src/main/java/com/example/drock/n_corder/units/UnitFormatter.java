@@ -15,30 +15,30 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class UnitFormatter {
-    Map<Integer, String> mSuffixes = new HashMap<Integer, String>();
+    Map<Integer, IUnitSuffixer> mSuffixes = new HashMap<>();
     int mUnit;
     String mSuffix;
 
     public UnitFormatter(int unit) {
         mUnit = unit;
-        mSuffixes.put(Units.UNKNOWN, "");
-        mSuffixes.put(Units.ACCELERATION, "m/s^2");
-        mSuffixes.put(Units.ANGLE, "rad");
-        mSuffixes.put(Units.MAGNETIC_FIELD_STRENGH, "T");
-        mSuffixes.put(Units.ANGULAR_SPEED, "rad/s");
-        mSuffixes.put(Units.PRESSURE, "Pa");
-        mSuffixes.put(Units.DISTANCE, "m");
-        mSuffixes.put(Units.RELATIVE_HUMIDITY, "%");
-        mSuffixes.put(Units.TEMPERATURE, "K");
-        mSuffixes.put(Units.HEART_RATE, "BPM");
-        mSuffixes.put(Units.ILLUMINANCE, "lx");
-        mSuffixes.put(Units.STEPS, "steps");
-        mSuffixes.put(Units.CURRENT, "A");
-        mSuffixes.put(Units.MASS, "kg");
-        mSuffixes.put(Units.WEIGHT, "N");
-        mSuffixes.put(Units.TIME, "s");
+        mSuffixes.put(Units.UNKNOWN, new DefaultUnitSuffixer(""));
+        mSuffixes.put(Units.ACCELERATION, new DefaultUnitSuffixer("m/s^2"));
+        mSuffixes.put(Units.ANGLE, new DefaultUnitSuffixer("rad"));
+        mSuffixes.put(Units.MAGNETIC_FIELD_STRENGH, new MagneticFieldUnitSuffixer());
+        mSuffixes.put(Units.ANGULAR_SPEED, new DefaultUnitSuffixer("rad/s"));
+        mSuffixes.put(Units.PRESSURE, new DefaultUnitSuffixer("Pa"));
+        mSuffixes.put(Units.DISTANCE, new DefaultUnitSuffixer("m"));
+        mSuffixes.put(Units.RELATIVE_HUMIDITY, new DefaultUnitSuffixer("%"));
+        mSuffixes.put(Units.TEMPERATURE, new DefaultUnitSuffixer("K"));
+        mSuffixes.put(Units.HEART_RATE, new DefaultUnitSuffixer("BPM"));
+        mSuffixes.put(Units.ILLUMINANCE, new DefaultUnitSuffixer("lx"));
+        mSuffixes.put(Units.STEPS, new DefaultUnitSuffixer("steps"));
+        mSuffixes.put(Units.CURRENT, new DefaultUnitSuffixer("A"));
+        mSuffixes.put(Units.MASS, new DefaultUnitSuffixer("kg"));
+        mSuffixes.put(Units.WEIGHT, new DefaultUnitSuffixer("N"));
+        mSuffixes.put(Units.TIME, new DefaultUnitSuffixer("s"));
 
-        mSuffix = mSuffixes.get(Units.getBasicUnitType(unit));
+        mSuffix = mSuffixes.get(Units.getBasicUnitType(unit)).getSuffix(unit);
     }
 
     public String format(float v) {

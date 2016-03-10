@@ -9,29 +9,36 @@
 * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-package com.example.drock.n_corder;
+package com.example.drock.n_corder.IOIO;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.View;
 
-public class IOIOConfigureConnectionActivity extends AppCompatActivity implements IOIOConnectionsListFragment.OnListFragmentInteractionListener{
+import com.example.drock.n_corder.ListFragmentBase;
+import com.example.drock.n_corder.R;
+
+public class IOIOSensorConfigurationActivity extends AppCompatActivity implements ListFragmentBase.OnListFragmentInteractionListener {
+    public static final String CONNECTION_ID = "connection-id";
+
+    protected String mConnectionId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        stopService(new Intent(this, IOIOAccessService.class));
-
-        setContentView(R.layout.activity_ioioconfigure_connection);
+        setContentView(R.layout.activity_ioiosensor_configuration);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        if(null != savedInstanceState) {
+            mConnectionId = savedInstanceState.getString(CONNECTION_ID);
+        } else {
+            Intent intent = getIntent();
+            mConnectionId = intent.getStringExtra(CONNECTION_ID);
+        }
 
         android.support.v4.app.FragmentManager fm = getSupportFragmentManager();
         android.support.v4.app.Fragment fragment = fm.findFragmentById(R.id.fragmentContainer);
@@ -42,13 +49,21 @@ public class IOIOConfigureConnectionActivity extends AppCompatActivity implement
     }
 
     protected android.support.v4.app.Fragment createFragment() {
-        return new IOIOConnectionsListFragment();
+        return IOIOSensorListFragment.newInstance(mConnectionId);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle bundle) {
+        bundle.putString(CONNECTION_ID, mConnectionId);
+        super.onSaveInstanceState(bundle);
     }
 
     @Override
     public void onListFragmentInteraction(Object object) {
-        Intent intent = new Intent(this, IOIOSensorConfigurationActivity.class);
-        intent.putExtra(IOIOSensorConfigurationActivity.CONNECTION_ID, ((IOIOConnectionInfo)object).getName());
+        Intent intent = new Intent(this, ConnectIOIOActivity.class);
+        IOIODeviceDriverInfo driverInfo = (IOIODeviceDriverInfo)object;
+        intent.putExtra(ConnectIOIOActivity.CONNECTION_ID, mConnectionId);
+        intent.putExtra(ConnectIOIOActivity.SENSOR_NAME, driverInfo.mName);
         startActivity(intent);
     }
 }

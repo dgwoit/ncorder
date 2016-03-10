@@ -46,6 +46,7 @@ public class NumericViewFragment extends android.support.v4.app.Fragment impleme
     private TextView mTV;
     //private OnFragmentInteractionListener mListener;
     private UnitFormatter mFormatter;
+    private boolean mChanged = true;
 
     public NumericViewFragment() {
         // Required empty public constructor
@@ -144,11 +145,13 @@ public class NumericViewFragment extends android.support.v4.app.Fragment impleme
     float mValue = 0;
     private synchronized boolean setValue(float value) {
         try {
-            if(value != mValue) {
+            if(value != mValue || mChanged ) {
                 mValue = value;
+                mChanged = false;
 
                 final String str = mFormatter.format(value);
 
+                //this would be better done as a view
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {

@@ -1,6 +1,7 @@
 <resources>
-    <string name="app_name">N-corder</string>
+    <string name="app_name">N-Corder</string>
     <string name="action_settings">Settings</string>
+    <string name="action_save">Save</string>
     <string name="button_onboard_sensors">Onboard Sensors</string>
     <string name="title_activity_onboard_sensor_list">OnboardSensorList</string>
     <string name="title_activity_android_sensors">Use Onboard Sensor</string>

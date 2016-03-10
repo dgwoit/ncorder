@@ -13,6 +13,9 @@ package com.example.drock.n_corder;
 
 import android.os.Bundle;
 
+import com.example.drock.n_corder.IOIO.IOIOConnectionInfo;
+import com.example.drock.n_corder.IOIO.IOIOConnectionTable;
+
 import java.util.ArrayList;
 import java.util.List;
 

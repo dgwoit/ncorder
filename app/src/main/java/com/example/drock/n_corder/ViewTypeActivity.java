@@ -11,10 +11,23 @@
 */
 package com.example.drock.n_corder;
 
+import android.content.Context;
 import android.content.Intent;
+import android.os.Environment;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.widget.Toast;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.util.List;
 
 public class ViewTypeActivity extends SingleFragmentActivity implements ViewTypeListFragment.OnListFragmentInteractionListener {
     String mStreamName;
@@ -28,12 +41,42 @@ public class ViewTypeActivity extends SingleFragmentActivity implements ViewType
         } else {
             Intent intent = getIntent();
             mStreamName = intent.getStringExtra(ParamNames.STREAM_NAME);
+            if(mStreamName != null && !mStreamName.isEmpty()) {
+                MeasurementDataStore.recordStream(mStreamName);
+            } else { //go back to beginning
+                startActivity(new Intent(this, MainActivity.class));
+            }
         }
+    }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_view_type, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_save) {
+            MeasurementDataStore.getInstance().save(getApplicationContext());
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
-        savedInstanceState.putString(ParamNames.STREAM_NAME, mStreamName);
+        if(mStreamName != null)
+            savedInstanceState.putString(ParamNames.STREAM_NAME, mStreamName);
         super.onSaveInstanceState(savedInstanceState);
     }
 

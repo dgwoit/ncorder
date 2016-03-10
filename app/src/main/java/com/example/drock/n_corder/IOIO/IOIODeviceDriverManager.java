@@ -9,9 +9,12 @@
 * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-package com.example.drock.n_corder;
+package com.example.drock.n_corder.IOIO;
 
 import android.util.Log;
+
+import com.example.drock.n_corder.IMeasurementSource;
+import com.example.drock.n_corder.SensorStreamBroker;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -45,70 +48,17 @@ public class IOIODeviceDriverManager {
 
     void loadDriverInfos() {
         driverInfos = new LinkedList<IOIODeviceDriverInfo>();
-        driverInfos.add(new IOIODeviceDriverInfo("Grove Hi Temp Probe - high temp", IOIOConnectionInfo.BUS_TYPE_A2D, new IOIODeviceDriverInfo.DriverInstantiator() {
-            @Override
-            public IOIODeviceDriver createInstance(int basePin) {
-                return new GroveHiTempThermocouple(basePin, false);
-            }
-        }) );
-        driverInfos.add(new IOIODeviceDriverInfo("Grove Hi Temp Probe - ambient temp", IOIOConnectionInfo.BUS_TYPE_A2D, new IOIODeviceDriverInfo.DriverInstantiator() {
-            @Override
-            public IOIODeviceDriver createInstance(int basePin) {
-                return new GroveHiTempThermocouple(basePin, true);
-            }
-        }) );
-        driverInfos.add(new IOIODeviceDriverInfo("Grove Differential Amplifier", IOIOConnectionInfo.BUS_TYPE_A2D, new IOIODeviceDriverInfo.DriverInstantiator() {
-            @Override
-            public IOIODeviceDriver createInstance(int basePin) {
-                return new GroveDifferentialAmplifier(basePin);
-            }
-        }));
-        driverInfos.add(new IOIODeviceDriverInfo("Analog Reader", IOIOConnectionInfo.BUS_TYPE_A2D, new IOIODeviceDriverInfo.DriverInstantiator() {
-            @Override
-            public IOIODeviceDriver createInstance(int basePin) {
-                return new AnalogPinReader(basePin);
-            }
-        }));
-        driverInfos.add(new IOIODeviceDriverInfo("Grove Load Cell", IOIOConnectionInfo.BUS_TYPE_A2D, new IOIODeviceDriverInfo.DriverInstantiator() {
-            @Override
-            public IOIODeviceDriver createInstance(int basePin) {
-                return new GroveLoadCell(basePin);
-            }
-        }));
-        driverInfos.add(new IOIODeviceDriverInfo("ACS712 Current Sensor", IOIOConnectionInfo.BUS_TYPE_A2D, new IOIODeviceDriverInfo.DriverInstantiator() {
-            @Override
-            public IOIODeviceDriver createInstance(int basePin) {
-                return new ACS712CurrentSensor(basePin);
-            }
-        }));
-        driverInfos.add(new IOIODeviceDriverInfo("Grove 80cm Infrared Proximity Sensor", IOIOConnectionInfo.BUS_TYPE_A2D, new IOIODeviceDriverInfo.DriverInstantiator() {
-            @Override
-            public IOIODeviceDriver createInstance(int basePin) {
-                try {
-                    //ClassLoader classLoader = ClassLoader.getSystemClassLoader();
-                    //final Class<Object> classToLoad = (Class<Object>) classLoader.loadClass("com.example.drock.n_corder.GroveInfraredProximitySensor");
-                    final Class classToLoad = GroveInfraredProximitySensor.class;
-                    Class[] cArg = new Class[1];
-                    cArg[0] = int.class;
-                    final Method m = classToLoad.getDeclaredMethod("newInstance", cArg);
-                    return (IOIODeviceDriver) m.invoke(null, basePin);
-                } /*catch(ClassNotFoundException x) {
-                    Log.e("IOIODvcDrvInstantiator", String.format("Class Not Found: %s", x.toString()));
-                }*/ catch (NoSuchMethodException x) {
-                    Log.e("IOIODvcDrvInstantiator", String.format("Method No Found: %s", x.toString()));
-                } catch (IllegalAccessException x) {
-                    Log.e("IOIODvcDrvInstantiator", String.format("Illegal Method Access: %s", x.toString()));
-                } catch (InvocationTargetException x) {
-                    Log.e("IOIODvcDrvInstantiator", String.format("Invocation Target Exception: %s", x.toString()));
-                }
-
-                return new GroveInfraredProximitySensor(basePin);
-            }
-        }));
+        driverInfos.add(new IOIODeviceDriverInfo("Grove Hi Temp Probe - high temp", IOIOConnectionInfo.BUS_TYPE_A2D, GroveHiTempThermocouplePinA.class)); //since we don't enumerate composite devices
+        driverInfos.add(new IOIODeviceDriverInfo("Grove Hi Temp Probe - ambient temp", IOIOConnectionInfo.BUS_TYPE_A2D, GroveHiTempThermocouplePinB.class)); //since we don't enumerate composite devices
+        driverInfos.add(new IOIODeviceDriverInfo("Grove Differential Amplifier", IOIOConnectionInfo.BUS_TYPE_A2D, GroveDifferentialAmplifier.class));
+        driverInfos.add(new IOIODeviceDriverInfo("Grove Diff. Amp. + Load Cell", IOIOConnectionInfo.BUS_TYPE_A2D, GroveLoadCell.class));
+        driverInfos.add(new IOIODeviceDriverInfo("ACS712 Current Sensor", IOIOConnectionInfo.BUS_TYPE_A2D, ACS712CurrentSensor.class));
+        driverInfos.add(new IOIODeviceDriverInfo("Grove 80cm Infrared Proximity Sensor", IOIOConnectionInfo.BUS_TYPE_A2D, GroveInfraredProximitySensor.class));
+        driverInfos.add(new IOIODeviceDriverInfo("Grove Hall Sensor", IOIOConnectionInfo.BUS_TYPE_A2D, GroveHallSensor.class));
     }
 
     // assigns/associates a driver instance to a connection
-    void AssignDriver(String connectionId, IOIODeviceDriver driver) {
+    public void AssignDriver(String connectionId, IOIODeviceDriver driver) {
         drivers.put(connectionId, driver);
     }
 

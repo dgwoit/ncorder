@@ -9,53 +9,41 @@
 * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-package com.example.drock.n_corder;
+package com.example.drock.n_corder.IOIO;
 
-import android.app.Activity;
-import android.content.Context;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 
-import com.example.drock.n_corder.dummy.DummyContent;
-import com.example.drock.n_corder.dummy.DummyContent.DummyItem;
+import com.example.drock.n_corder.ListFragmentBase;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 /**
  * A fragment representing a list of Items.
  * <p/>
- * Activities containing this fragment MUST implement the {@link OnListFragmentInteractionListener}
+ * Activities containing this fragment MUST implement the {@link ListFragmentBase.OnListFragmentInteractionListener}
  * interface.
  */
-public class IOIOSensorListFragment extends ListFragmentBase {
+public class IOIOConnectionsListFragment extends ListFragmentBase {
 
-    private static final String CONNECTION_ID = "connection-id";
-
+    // TODO: Customize parameter argument names
+    private static final String ARG_LIST_ITEMS = "list-items";
     // TODO: Customize parameters
-    private String mConnectionId;
     private OnListFragmentInteractionListener mListener;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
      */
-    public IOIOSensorListFragment() {
+    public IOIOConnectionsListFragment() {
     }
 
     // TODO: Customize parameter initialization
     @SuppressWarnings("unused")
-    public static IOIOSensorListFragment newInstance(String connectionId) {
-        IOIOSensorListFragment fragment = new IOIOSensorListFragment();
+    public static IOIOConnectionsListFragment newInstance() {
+        IOIOConnectionsListFragment fragment = new IOIOConnectionsListFragment();
         Bundle args = new Bundle();
-        args.putString(CONNECTION_ID, connectionId);
+        //args.putInt(ARG_COLUMN_COUNT, columnCount);
         fragment.setArguments(args);
         return fragment;
     }
@@ -63,19 +51,17 @@ public class IOIOSensorListFragment extends ListFragmentBase {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (getArguments() != null) {
+            //mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
+        }
     }
 
-    @Override
     protected void createListItems() {
-        if (getArguments() != null) {
-            mConnectionId = getArguments().getString(CONNECTION_ID);
-        }
-
-        IOIODeviceDriverManager drvMan = IOIODeviceDriverManager.getInstance();
-        Collection<IOIODeviceDriverInfo> driverInfos = drvMan.getDriversForConnection(mConnectionId);
         IOIOConnectionTable connections = new IOIOConnectionTable();
+        List<IOIOConnectionInfo> connectionInfos = connections.getConnectionInfo();
         ArrayList<ListItem> listItems = new ArrayList<ListItem>();
-        for( IOIODeviceDriverInfo info : driverInfos) {
+        for( IOIOConnectionInfo info : connectionInfos) {
             listItems.add(new ListItem(info.getName(), info));
         }
         setListItems(listItems);

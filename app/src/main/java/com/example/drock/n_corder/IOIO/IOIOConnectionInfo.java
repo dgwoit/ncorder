@@ -9,39 +9,35 @@
 * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-package com.example.drock.n_corder;
+package com.example.drock.n_corder.IOIO;
 
-import java.util.UUID;
+import java.util.List;
 
-public class IOIODeviceDriverInfo implements Comparable<IOIODeviceDriverInfo> {
-    public interface DriverInstantiator {
-        public IOIODeviceDriver createInstance(int basePin);
-    }
+
+public class IOIOConnectionInfo {
+    public final static String BUS_TYPE_A2D = "A/D";
+    public final static String BUS_TYPE_SPI = "SPI";
+    public final static String BUS_TYPE_UART = "UART";
 
     protected String mName;
-    protected String mBusProtocol;
-    DriverInstantiator mInstantiator;
+    protected String[] mTypes;
+    protected int mPin;
 
-    public IOIODeviceDriverInfo(String name, String busProtocol, DriverInstantiator instantiator) {
+    public IOIOConnectionInfo(String name, String[] types, int pin) {
         mName = name;
-        mBusProtocol = busProtocol;
-        mInstantiator = instantiator;
+        mTypes = types;
+        mPin = pin;
     }
 
     public String getName() {
         return mName;
     }
 
-    public String getBusProtocol() {
-        return mBusProtocol;
+    public String[] getTypes() {
+        return mTypes;
     }
 
-    public IOIODeviceDriver createInstance(int basePin) {
-        return mInstantiator.createInstance(basePin);
-    }
-
-    @Override
-    public int compareTo(IOIODeviceDriverInfo rhVal) {
-        return mName.compareTo(rhVal.getName());
+    public int getPin() {
+        return mPin;
     }
 }

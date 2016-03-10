@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.drock.n_corder">
-
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -28,7 +28,7 @@
                 android:value="com.example.drock.n_corder.MainActivity" />
         </activity>
         <activity
-            android:name=".ConnectIOIOActivity"
+            android:name=".IOIO.ConnectIOIOActivity"
             android:label="@string/title_activity_connect_ioio"
             android:parentActivityName=".MainActivity"
             android:theme="@style/AppTheme.NoActionBar"
@@ -49,11 +49,11 @@
         <activity
             android:name=".DataViewActivity"
             android:label="@string/title_activity_data_view"
-            android:parentActivityName=".MainActivity"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme.NoActionBar"
+            android:parentActivityName=".ViewTypeActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.example.drock.n_corder.MainActivity" />
+                android:value="com.example.drock.n_corder.ViewTypeActivity" />
             <!--
               ATTENTION: This intent was auto-generated. Follow instructions at
               https://g.co/AppIndexing/AndroidStudio to publish your Android app deep links.
@@ -75,7 +75,7 @@
         </activity>
 
         <service
-            android:name=".IOIOAccessService"
+            android:name=".IOIO.IOIOAccessService"
             android:enabled="true"
             android:exported="false" />
         <service
@@ -93,7 +93,7 @@
                 android:value=".android.AndroidSensorListActivity" />
         </activity>
         <activity
-            android:name=".IOIOConfigureConnectionActivity"
+            android:name=".IOIO.IOIOConfigureConnectionActivity"
             android:label="@string/title_activity_ioioconfigure_connection"
             android:parentActivityName=".MainActivity"
             android:theme="@style/AppTheme.NoActionBar">
@@ -102,23 +102,19 @@
                 android:value="com.example.drock.n_corder.MainActivity" />
         </activity>
         <activity
-            android:name=".IOIOSensorConfigurationActivity"
+            android:name=".IOIO.IOIOSensorConfigurationActivity"
             android:label="@string/title_activity_ioiosensor_configuration"
-            android:parentActivityName=".IOIOConfigureConnectionActivity"
+            android:parentActivityName=".IOIO.IOIOConfigureConnectionActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.example.drock.n_corder.IOIOConfigureConnectionActivity" />
+                android:value=".IOIO.IOIOConfigureConnectionActivity" />
         </activity>
         <activity
             android:name=".ViewTypeActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar"
-            android:parentActivityName=".MainActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.example.drock.n_corder.MainActivity" />
-        </activity>
+        />
         <!-- ATTENTION: This was auto-generated to add Google Play services to your project for
              App Indexing.  See https://g.co/AppIndexing/AndroidStudio for more information. -->
         <meta-data

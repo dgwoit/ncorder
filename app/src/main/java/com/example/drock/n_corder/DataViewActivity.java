@@ -13,10 +13,15 @@ package com.example.drock.n_corder;
 
 import android.content.Intent;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.WindowManager;
+
+import com.example.drock.n_corder.IOIO.IOIOAccessService;
 
 public class DataViewActivity extends AppCompatActivity {
     private String mStreamName;
@@ -31,6 +36,7 @@ public class DataViewActivity extends AppCompatActivity {
         toolbar.setTitle("Live Data");
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
 
         if(null != savedInstanceState) {
             mStreamName = savedInstanceState.getString(ParamNames.STREAM_NAME);
@@ -61,11 +67,39 @@ public class DataViewActivity extends AppCompatActivity {
     @Override
     protected void onDestroy(){
         super.onDestroy();
-        stopService(new Intent(this, IOIOAccessService.class));
+        //stopService(new Intent(this, IOIOAccessService.class));
     }
 
     protected Fragment createFragment() {
         DataViewFactory factory = new DataViewFactory();
         return factory.createFragment(mDisplayParams, mStreamName);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_view_type, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_save) {
+            MeasurementDataStore.getInstance().save(getApplicationContext());
+            return true;
+        }
+
+        if(id == android.R.id.home) {
+            NavUtils.navigateUpFromSameTask(this);
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 }
