@@ -12,13 +12,18 @@
 package com.example.drock.n_corder;
 
 
+import android.content.Intent;
 import android.graphics.Canvas;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.NavUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.example.drock.n_corder.units.UnitFormatter;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -31,13 +36,14 @@ import java.util.Observer;
  * Use the {@link ValuePlotFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class ValuePlotFragment extends Fragment {
+public class ValuePlotFragment extends DataViewFragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_STREAM_NAME = "streamName";
 
     private String mStreamName;
     private DataPlotView mDataView;
+    private UnitFormatter mFormatter;
 
     public ValuePlotFragment() {
         // Required empty public constructor
@@ -68,6 +74,25 @@ public class ValuePlotFragment extends Fragment {
     }
 
     @Override
+    public int getMenuResource() { return R.menu.menu_data_plot; }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_regress) {
+            mDataView.startRegressionTool();
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
@@ -80,6 +105,17 @@ public class ValuePlotFragment extends Fragment {
                 @Override
                 public void update(Observable observable, Object data) {
                     mDataView.onDataChanged();
+                    List<Measurement> measurements = (List<Measurement>)data;
+                    if(null == mFormatter && measurements.size() > 0) {
+                        mFormatter = new UnitFormatter(measurements.get(0).getUnit());
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                String title = String.format("%s (%s)", mFormatter.getUnitSystemName(), mFormatter.getUnitName());
+                                ((DataViewActivity)getActivity()).setTitle(title);
+                            }
+                        });
+                    }
                 }
             };
             MeasurementDataStore.getInstance().addObserver(observer);

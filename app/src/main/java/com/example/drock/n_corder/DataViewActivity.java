@@ -14,6 +14,7 @@ package com.example.drock.n_corder;
 import android.content.Intent;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.NavUtils;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -35,7 +36,9 @@ public class DataViewActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle("Live Data");
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        ActionBar actionBar = getSupportActionBar();
+        if(actionBar != null)
+            actionBar.setDisplayHomeAsUpEnabled(true);
 
 
         if(null != savedInstanceState) {
@@ -78,7 +81,14 @@ public class DataViewActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_view_type, menu);
+        android.support.v4.app.FragmentManager fm = getSupportFragmentManager();
+        android.support.v4.app.Fragment fragment = fm.findFragmentById(R.id.fragmentContainer);
+        if(fragment != null) {
+            getMenuInflater().inflate(((DataViewFragment)fragment).getMenuResource(), menu);
+        }
+        else
+            getMenuInflater().inflate(R.menu.menu_view_type, menu);
+
         return true;
     }
 
@@ -91,15 +101,32 @@ public class DataViewActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_save) {
-            MeasurementDataStore.getInstance().save(getApplicationContext());
+            MeasurementDataStore.getInstance().save(this);
+            return true;
+        }
+
+        if(id == R.id.action_new) {
+            NavUtils.navigateUpTo(this, new Intent(this, MainActivity.class));
             return true;
         }
 
         if(id == android.R.id.home) {
-            NavUtils.navigateUpFromSameTask(this);
+            finish();
             return true;
         }
 
+        android.support.v4.app.FragmentManager fm = getSupportFragmentManager();
+        android.support.v4.app.Fragment fragment = fm.findFragmentById(R.id.fragmentContainer);
+        if(fragment != null) {
+            if(fragment.onOptionsItemSelected(item))
+                return true;
+        }
+
         return super.onOptionsItemSelected(item);
+    }
+
+    public void setTitle(String title) {
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setTitle(title);
     }
 }

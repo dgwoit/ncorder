@@ -15,8 +15,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Environment;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.NavUtils;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -35,6 +38,9 @@ public class ViewTypeActivity extends SingleFragmentActivity implements ViewType
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        ActionBar actionBar = getSupportActionBar();
+        if(actionBar != null)
+            actionBar.setDisplayHomeAsUpEnabled(true);
 
         if(null != savedInstanceState) {
             mStreamName = savedInstanceState.getString(ParamNames.STREAM_NAME);
@@ -66,7 +72,16 @@ public class ViewTypeActivity extends SingleFragmentActivity implements ViewType
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_save) {
-            MeasurementDataStore.getInstance().save(getApplicationContext());
+            MeasurementDataStore.getInstance().save(this);
+            return true;
+        }
+
+        if(id == R.id.action_new) {
+            NavUtils.navigateUpTo(this, new Intent(this, MainActivity.class));
+        }
+
+        if(id == android.R.id.home) {
+            finish();
             return true;
         }
 

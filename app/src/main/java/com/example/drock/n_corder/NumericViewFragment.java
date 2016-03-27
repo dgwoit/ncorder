@@ -35,7 +35,7 @@ import com.example.drock.n_corder.units.UnitFormatter;
  * Use the {@link NumericViewFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class NumericViewFragment extends android.support.v4.app.Fragment implements IMeasurementSink {
+public class NumericViewFragment extends DataViewFragment implements IMeasurementSink {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "streamName";
@@ -138,6 +138,13 @@ public class NumericViewFragment extends android.support.v4.app.Fragment impleme
     public boolean update(Measurement m) {
         if(null == mFormatter) {
             mFormatter = new UnitFormatter(m.getUnit());
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    String title = String.format("%s (%s)", mFormatter.getUnitSystemName(), mFormatter.getUnitName());
+                    ((DataViewActivity)getActivity()).setTitle(title);
+                }
+            });
         }
         return setValue(m.getValue());
     }

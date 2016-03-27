@@ -14,11 +14,17 @@ package com.example.drock.n_corder.units;
 import java.util.HashMap;
 import java.util.Map;
 
+
 public class UnitFormatter {
     Map<Integer, IUnitSuffixer> mSuffixes = new HashMap<>();
+    Map<Integer, String> mUnitNames = new HashMap<>();
+    Map<Integer, String> mUnitSystemNames = new HashMap<>();
     int mUnit;
     String mSuffix;
+    String mUnitName;
+    String mUnitSystemName;
 
+    //this probably should be turned into a factor for turning out textual unit information
     public UnitFormatter(int unit) {
         mUnit = unit;
         mSuffixes.put(Units.UNKNOWN, new DefaultUnitSuffixer(""));
@@ -38,7 +44,43 @@ public class UnitFormatter {
         mSuffixes.put(Units.WEIGHT, new DefaultUnitSuffixer("N"));
         mSuffixes.put(Units.TIME, new DefaultUnitSuffixer("s"));
 
+        mUnitNames.put(Units.UNKNOWN, "UNKNOWN UNIT");
+        mUnitNames.put(Units.ACCELERATION, "METERS PER SECOND PER SECOND");
+        mUnitNames.put(Units.ANGLE, "RADIANS");
+        mUnitNames.put(Units.MAGNETIC_FIELD_STRENGH, "TESLA");
+        mUnitNames.put(Units.ANGULAR_SPEED, "RADIANS PER SECOND");
+        mUnitNames.put(Units.PRESSURE, "PASCALS");
+        mUnitNames.put(Units.DISTANCE, "METERS");
+        mUnitNames.put(Units.RELATIVE_HUMIDITY, "% HUMIDITY");
+        mUnitNames.put(Units.TEMPERATURE, "KELVIN");
+        mUnitNames.put(Units.HEART_RATE, "BEATS PER MINUTE");
+        mUnitNames.put(Units.ILLUMINANCE, "LUMENS");
+        mUnitNames.put(Units.STEPS, "STEPS");
+        mUnitNames.put(Units.CURRENT, "AMPS");
+        mUnitNames.put(Units.MASS, "KILOGRAMS");
+        mUnitNames.put(Units.WEIGHT, "NEWTONS");
+        mUnitNames.put(Units.TIME, "SECONDS");
+
+        mUnitSystemNames.put(Units.UNKNOWN, "UNKNOWN");
+        mUnitSystemNames.put(Units.ACCELERATION, "ACCELERATION");
+        mUnitSystemNames.put(Units.ANGLE, "ANGLE");
+        mUnitSystemNames.put(Units.MAGNETIC_FIELD_STRENGH, "MAGNETIC FIELD STRENGH");
+        mUnitSystemNames.put(Units.ANGULAR_SPEED, "ANGULARE SPEED");
+        mUnitSystemNames.put(Units.PRESSURE, "PRESSURE");
+        mUnitSystemNames.put(Units.DISTANCE, "DISTANCE");
+        mUnitSystemNames.put(Units.RELATIVE_HUMIDITY, "RELATIVE HUMIDITY");
+        mUnitSystemNames.put(Units.TEMPERATURE, "TEMPERATURE");
+        mUnitSystemNames.put(Units.HEART_RATE, "HEART RATE");
+        mUnitSystemNames.put(Units.ILLUMINANCE, "ILLUMINANCE");
+        mUnitSystemNames.put(Units.STEPS, "STEPS");
+        mUnitSystemNames.put(Units.CURRENT, "CURRENT");
+        mUnitSystemNames.put(Units.MASS, "MASS");
+        mUnitSystemNames.put(Units.WEIGHT, "WEIGHT");
+        mUnitSystemNames.put(Units.TIME, "TIME");
+
         mSuffix = mSuffixes.get(Units.getBasicUnitType(unit)).getSuffix(unit);
+        mUnitName = mUnitNames.get(Units.getBasicUnitType(unit));
+        mUnitSystemName = mUnitSystemNames.get(Units.getBasicUnitType(unit));
     }
 
     public String format(float v) {
@@ -48,4 +90,7 @@ public class UnitFormatter {
     public String format(long v) {
         return String.format("%d %s", v, mSuffix);
     }
+    
+    public String getUnitName() { return mUnitName; }
+    public String getUnitSystemName() { return mUnitSystemName; }
 }

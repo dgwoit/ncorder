@@ -19,6 +19,10 @@ public class AnalogPinReader extends IOIODeviceDriver implements IMeasurementSou
     protected MeasurementSource dispatcher = new MeasurementSource();
     protected UnitConverter mUnitConverter;
 
+    static IOIODeviceDriver newInstance(int pinNo) {
+        return new AnalogPinReader(pinNo);
+    }
+
     public AnalogPinReader(int pinNo) {
         this.mPinNo = pinNo;
     }

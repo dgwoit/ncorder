@@ -65,7 +65,7 @@ public class DataPlotView extends View {
 
     private boolean mAutoScroll = true;
     private boolean mGestureZooming = false;
-
+    private DataPlotRegressionTool mTool;
 
     public DataPlotView(Context context) {
         super(context);
@@ -155,6 +155,8 @@ public class DataPlotView extends View {
 
         determineVisibleSet();
         if(mVisibleDataSet != null && mVisibleDataSet.size() > 0) {
+            if(mTool != null)
+                mTool.onDraw(canvas);
             drawGraticule(canvas);
             drawData(canvas);
         }
@@ -266,10 +268,14 @@ public class DataPlotView extends View {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        if(!mGestureZooming) {
-            mScrollGestureDetector.onTouchEvent(event);
+        if(mTool != null)
+            return mTool.onTouchEvent(event);
+        else {
+            if (!mGestureZooming) {
+                mScrollGestureDetector.onTouchEvent(event);
+            }
+            mScaleGestureDetector.onTouchEvent(event);
         }
-        mScaleGestureDetector.onTouchEvent(event);
 
         return true;
     }
@@ -357,7 +363,7 @@ public class DataPlotView extends View {
         }
     }
 
-    float valueToY(float v) {
+    public float valueToY(float v) {
         int paddingTop = getPaddingTop();
         //int paddingBottom = getPaddingBottom();
         int contentHeight = getHeight(); // - paddingTop - paddingBottom;
@@ -366,11 +372,17 @@ public class DataPlotView extends View {
         return y;
     }
 
-    float timeToX(long timeVal) {
+    public float timeToX(long timeVal) {
         //int paddingRight = getPaddingRight();
         float contentWidth = (float)getWidth(); // - paddingRight - getPaddingLeft();
         float x = (contentWidth * (float)(timeVal - mDomainMin)) / (float)mDomain; //+paddingRight;
         return x;
+    }
+
+    public long xToTime(float x) {
+        float contentWidth = (float)getWidth(); // - paddingRight - getPaddingLeft();
+        long timeVal = (long)(x * (float)mDomain / contentWidth) + mDomainMin; //+paddingRight;
+        return timeVal;
     }
 
     void adjustDomain(long change) {
@@ -488,6 +500,36 @@ public class DataPlotView extends View {
             mRangeMin -= mRange / 2.0f;
             mRangeMax = mRangeMin + mRange;
         }
+    }
+
+    public List<Measurement> getMeasurementsOverDomain(long domainStart, long domainEnd) {
+        List<Measurement> dataSet = new LinkedList<>();
+        synchronized (mData) {
+            //select data withing visible domain
+            for (Measurement m : mData) {
+                if (domainStart > m.getTimestamp())
+                    continue;
+                else if (domainEnd > m.getTimestamp())
+                    dataSet.add(m);
+                else
+                    break;
+            }
+        }
+
+        return dataSet;
+    }
+
+    public void startRegressionTool() {
+        mTool = new DataPlotRegressionTool();
+        mTool.init(this);
+    }
+
+    public void endTool() {
+        mTool = null;
+    }
+
+    public void endAutoScroll() {
+        mAutoScroll = false;
     }
 
     /**

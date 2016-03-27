@@ -1,7 +1,9 @@
 package com.example.drock.n_corder;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Environment;
+import android.support.v7.app.AlertDialog;
 import android.widget.Toast;
 
 import java.io.File;
@@ -15,7 +17,7 @@ import java.util.Observable;
 public class MeasurementDataStore extends Observable {
     static MeasurementDataStore mInstance;
     String mStreamName;
-    List<Measurement> mData;
+    List<Measurement> mData = new ArrayList<>();
     IMeasurementSink mSink;
 
 
@@ -24,7 +26,6 @@ public class MeasurementDataStore extends Observable {
     }
 
     private MeasurementDataStore(String streamName) {
-        mData = new ArrayList<>();
         mStreamName = streamName;
         mSink = new IMeasurementSink() {
             @Override
@@ -42,6 +43,11 @@ public class MeasurementDataStore extends Observable {
     }
 
     public void finalize() {
+        try {
+            super.finalize();
+        } catch (Throwable throwable) {
+            throwable.printStackTrace();
+        }
         SensorStreamBroker.getInstance().DetachFromStream(mSink, mStreamName);
     }
 
@@ -61,11 +67,16 @@ public class MeasurementDataStore extends Observable {
             // Write the string to the file
             String line = "time,value\n";
             osw.write(line);
-            List<Measurement> data = getData();
-            if(data.size() > 0) {
-                long baseTime = data.get(0).getTimestamp();
-                for (Measurement m : data) {
+
+            Object[] data;
+            synchronized (mData) {
+                data = getData().toArray();
+            }
+            if(data.length > 0) {
+                long baseTime = ((Measurement)data[0]).getTimestamp();
+                for (Object o : data) {
                     ///hard-code measurement serializer for now
+                    Measurement m = (Measurement)o;
                     double time = (m.getTimestamp() - baseTime) / 1000000000.;
                     line = String.format("%s,%f\n", time, m.getValue());
                     osw.write(line);
@@ -76,11 +87,15 @@ public class MeasurementDataStore extends Observable {
 
             //notify user data was successfully saved
 
-            CharSequence text = String.format("Saved %s", file.getPath());
-            int duration = Toast.LENGTH_SHORT;
+            CharSequence text = String.format("Saved to %s", file.getPath());
 
-            Toast toast = Toast.makeText(context, text, duration);
-            toast.show();
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(context, android.support.v7.appcompat.R.style.Theme_AppCompat_Dialog_Alert);
+            builder.setTitle(R.string.dialog_saved_data)
+                .setMessage(text)
+                .setPositiveButton(android.R.string.ok, null)
+                .create()
+                .show();
         }
         catch (IOException ioe)
         {

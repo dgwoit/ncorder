@@ -39,7 +39,7 @@ public class IOIODeviceDriverManager {
 
     private IOIODeviceDriverManager() {
 
-        drivers = new TreeMap<String, IOIODeviceDriver>();
+        drivers = new TreeMap<>();
         loadDriverInfos();
     }
 
@@ -47,7 +47,7 @@ public class IOIODeviceDriverManager {
     private Collection<IOIODeviceDriverInfo> driverInfos;
 
     void loadDriverInfos() {
-        driverInfos = new LinkedList<IOIODeviceDriverInfo>();
+        driverInfos = new LinkedList<>();
         driverInfos.add(new IOIODeviceDriverInfo("Grove Hi Temp Probe - high temp", IOIOConnectionInfo.BUS_TYPE_A2D, GroveHiTempThermocouplePinA.class)); //since we don't enumerate composite devices
         driverInfos.add(new IOIODeviceDriverInfo("Grove Hi Temp Probe - ambient temp", IOIOConnectionInfo.BUS_TYPE_A2D, GroveHiTempThermocouplePinB.class)); //since we don't enumerate composite devices
         driverInfos.add(new IOIODeviceDriverInfo("Grove Differential Amplifier", IOIOConnectionInfo.BUS_TYPE_A2D, GroveDifferentialAmplifier.class));
@@ -55,6 +55,7 @@ public class IOIODeviceDriverManager {
         driverInfos.add(new IOIODeviceDriverInfo("ACS712 Current Sensor", IOIOConnectionInfo.BUS_TYPE_A2D, ACS712CurrentSensor.class));
         driverInfos.add(new IOIODeviceDriverInfo("Grove 80cm Infrared Proximity Sensor", IOIOConnectionInfo.BUS_TYPE_A2D, GroveInfraredProximitySensor.class));
         driverInfos.add(new IOIODeviceDriverInfo("Grove Hall Sensor", IOIOConnectionInfo.BUS_TYPE_A2D, GroveHallSensor.class));
+        driverInfos.add(new IOIODeviceDriverInfo("Analog to Digital 0-5 volts", IOIOConnectionInfo.BUS_TYPE_A2D, AnalogPinReader.class));
     }
 
     // assigns/associates a driver instance to a connection
@@ -70,7 +71,7 @@ public class IOIODeviceDriverManager {
         IOIOConnectionTable connectionTable = new IOIOConnectionTable();
         IOIOConnectionInfo connectionInfo = connectionTable.getConnectionInfo(connectionId);
         String[] pinTypes = connectionInfo.getTypes();
-        Set<IOIODeviceDriverInfo> driverInfoSet = new TreeSet<IOIODeviceDriverInfo>();
+        Set<IOIODeviceDriverInfo> driverInfoSet = new TreeSet<>();
         for(String pinType: pinTypes) {
             for(IOIODeviceDriverInfo driverInfo: driverInfos) {
                 if (pinType.compareTo(driverInfo.getBusProtocol()) == 0)
