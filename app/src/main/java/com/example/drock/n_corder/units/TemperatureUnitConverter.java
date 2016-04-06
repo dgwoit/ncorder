@@ -20,9 +20,11 @@ public class TemperatureUnitConverter extends UnitConverter {
         float toValue;
         final float kelvinToCelsiusAdjust = -273.15f;
         if(fromUnit == TemperatureUnits.KELVIN && toUnit == TemperatureUnits.CELSIUS)
-            toValue = fromUnit - kelvinToCelsiusAdjust;
+            toValue = fromValue + kelvinToCelsiusAdjust;
         else if(fromUnit == TemperatureUnits.CELSIUS && toUnit == TemperatureUnits.KELVIN)
-            toValue = fromUnit + kelvinToCelsiusAdjust;
+            toValue = fromValue - kelvinToCelsiusAdjust;
+        else if(fromUnit == TemperatureUnits.KELVIN && toUnit == TemperatureUnits.FAHRENHEIT)
+            toValue = (fromValue + kelvinToCelsiusAdjust) * 9f /5f + 32f;
         else if(fromUnit == toUnit)
             toValue = fromValue;
         else

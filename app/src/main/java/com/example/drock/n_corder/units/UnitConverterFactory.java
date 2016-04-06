@@ -31,6 +31,9 @@ public class UnitConverterFactory {
             case Units.MAGNETIC_FIELD_STRENGH:
                 return new MagneticFieldUnitConverter();
 
+            case Units.TEMPERATURE:
+                return new TemperatureUnitConverter();
+
             default:
                 return new NullUnitConverter(unit);
         }

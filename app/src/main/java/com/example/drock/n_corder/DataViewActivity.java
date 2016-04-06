@@ -115,6 +115,11 @@ public class DataViewActivity extends AppCompatActivity {
             return true;
         }
 
+        if(id == R.id.action_settings) {
+            Intent intent = new Intent(this, DisplayUnitSettingsActivity.class);
+            startActivity(intent);
+        }
+
         android.support.v4.app.FragmentManager fm = getSupportFragmentManager();
         android.support.v4.app.Fragment fragment = fm.findFragmentById(R.id.fragmentContainer);
         if(fragment != null) {

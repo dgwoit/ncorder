@@ -89,6 +89,14 @@ public class ValuePlotFragment extends DataViewFragment {
             return true;
         }
 
+        if (id == R.id.action_use_lines) {
+            mDataView.setDrawLines(true);
+        }
+
+        if (id == R.id.action_use_points) {
+            mDataView.setDrawLines(false);
+        }
+
         return super.onOptionsItemSelected(item);
     }
 

@@ -14,4 +14,5 @@ package com.example.drock.n_corder.units;
 public class TemperatureUnits {
     public static final int KELVIN = Units.makeUnit(Units.TEMPERATURE, 1);
     public static final int CELSIUS = Units.makeUnit(Units.TEMPERATURE, 2);
+    public static final int FAHRENHEIT = Units.makeUnit(Units.TEMPERATURE, 3);
 }

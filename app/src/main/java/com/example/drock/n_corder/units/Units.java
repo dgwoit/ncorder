@@ -29,6 +29,9 @@ public class Units {
     public static final int MASS = 13; //kilogram
     public static final int WEIGHT = 14; //Newtons
     public static final int TIME = 15; //seconds
+    public static final int SPEED = 16; //meters per second
+    public static final int VOLTAGE = 17; //volts
+    public static final int FORCE = 18; //Newtons
 
     public static final int BASE_UNIT_MASK = 0xFF;
     public static final int SUB_UNIT_POSITION = 8;

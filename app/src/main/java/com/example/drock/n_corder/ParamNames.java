@@ -14,4 +14,5 @@ package com.example.drock.n_corder;
 public class ParamNames {
     public static final String STREAM_NAME = "streamName";
     public static final String DISPLAY_PARAMS = "displayParams";
+    public static final String UNIT_SYSTEM = "unitSystem";
 }

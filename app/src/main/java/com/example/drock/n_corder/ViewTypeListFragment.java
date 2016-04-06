@@ -34,14 +34,12 @@ public class ViewTypeListFragment extends ListFragmentBase {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (getArguments() != null) {
+        //if (getArguments() != null) {
             //mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
-        }
+        //}
     }
 
     protected void createListItems() {
-        IOIOConnectionTable connections = new IOIOConnectionTable();
-        List<IOIOConnectionInfo> connectionInfos = connections.getConnectionInfo();
         ArrayList<ListItem> listItems = new ArrayList<ListItem>();
         listItems.add(new ListItem("Numeric Display", DataViewFactory.ViewType.NumericDisplay));
         listItems.add(new ListItem("Data Plot", DataViewFactory.ViewType.DataPlot));

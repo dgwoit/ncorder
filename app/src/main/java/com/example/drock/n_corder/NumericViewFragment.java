@@ -36,11 +36,6 @@ import com.example.drock.n_corder.units.UnitFormatter;
  * create an instance of this fragment.
  */
 public class NumericViewFragment extends DataViewFragment implements IMeasurementSink {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "streamName";
-
-
     private String mStreamName;
 
     private TextView mTV;
@@ -63,7 +58,7 @@ public class NumericViewFragment extends DataViewFragment implements IMeasuremen
     public static NumericViewFragment newInstance(String streamName) {
         NumericViewFragment fragment = new NumericViewFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, streamName);
+        args.putString(ParamNames.STREAM_NAME, streamName);
         fragment.setArguments(args);
         return fragment;
     }
@@ -72,7 +67,7 @@ public class NumericViewFragment extends DataViewFragment implements IMeasuremen
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mStreamName = getArguments().getString(ARG_PARAM1);
+            mStreamName = getArguments().getString(ParamNames.STREAM_NAME);
             //SensorStreamBroker.getInstance().AttachToStream(this, mStreamName);
         }
     }
@@ -137,7 +132,8 @@ public class NumericViewFragment extends DataViewFragment implements IMeasuremen
     @Override
     public boolean update(Measurement m) {
         if(null == mFormatter) {
-            mFormatter = new UnitFormatter(m.getUnit());
+            DisplayUnitManager displayUnitManager = SystemFactoryBroker.getSystemFactory().getDisplayUnitManager();
+            mFormatter = displayUnitManager.getUnitFormatter(m.getUnit());
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
@@ -156,7 +152,7 @@ public class NumericViewFragment extends DataViewFragment implements IMeasuremen
                 mValue = value;
                 mChanged = false;
 
-                final String str = mFormatter.format(value);
+                final String str = mFormatter.formatSystem(value);
 
                 //this would be better done as a view
                 getActivity().runOnUiThread(new Runnable() {

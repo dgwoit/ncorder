@@ -15,17 +15,20 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.graphics.Path;
 import android.graphics.Rect;
+import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.text.TextPaint;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
 
+import com.example.drock.n_corder.units.UnitConverter;
 import com.example.drock.n_corder.units.UnitFormatter;
 import com.example.drock.n_corder.units.Units;
 
@@ -46,6 +49,8 @@ public class DataPlotView extends View {
     private Paint mGraticuleTextBgPaint;
     private boolean mGraticuleDrawNumbers = true;
     private Paint mDataPaint;
+    private float mDataPointSize = 1f;
+    private boolean mDrawLines = false;
 
     private TextPaint mTextPaint;
     private UnitFormatter mRangeFormatter;
@@ -66,6 +71,9 @@ public class DataPlotView extends View {
     private boolean mAutoScroll = true;
     private boolean mGestureZooming = false;
     private DataPlotRegressionTool mTool;
+    private UnitConverter mRangeConverter;
+    private int mRangeSystemUnit = 0;
+    private int mRangeDisplayUnit = 0;
 
     public DataPlotView(Context context) {
         super(context);
@@ -108,11 +116,15 @@ public class DataPlotView extends View {
 
         mGraticulePaint = new Paint();
         mGraticulePaint.setColor(Color.rgb(0xa0, 0xa0, 0xa0));
+        float axisLabelSize = getResources().getDimension(R.dimen.axis_label_size);
+        mGraticulePaint.setTextSize(axisLabelSize);
         mGraticuleTextBgPaint = new Paint();
         mGraticuleTextBgPaint.setColor(Color.rgb(0x00, 0x00, 0x00));
 
+
         mDataPaint = new Paint();
         mDataPaint.setColor(Color.rgb(0xcc, 0xcc, 0x00));
+        mDataPointSize = getResources().getDimensionPixelSize(R.dimen.data_plot_point_size);
 
         // Set up a default TextPaint object
         mTextPaint = new TextPaint();
@@ -139,6 +151,10 @@ public class DataPlotView extends View {
         postInvalidate();
     }
 
+    protected void setDrawLines(boolean b) {
+        mDrawLines = b;
+    }
+
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
@@ -159,6 +175,8 @@ public class DataPlotView extends View {
                 mTool.onDraw(canvas);
             drawGraticule(canvas);
             drawData(canvas);
+            drawXAxisLabel(canvas);
+            drawYAxisLabel(canvas);
         }
 
         // Draw the text.
@@ -337,7 +355,7 @@ public class DataPlotView extends View {
             for (float value = startValue; value < mRangeMax; value += rangePerDivision) {
                 float y = valueToY(value);
                 yText = mRangeFormatter.format(value);
-                mGraticuleTextBgPaint.getTextBounds(yText, 0, yText.length(), yTextBounds);
+                mGraticulePaint.getTextBounds(yText, 0, yText.length(), yTextBounds);
                 yTextBounds.offsetTo(1, (int) (y - yTextBounds.height() / 2f));
                 yTextBgBounds.set(yTextBounds);
                 yTextBgBounds.inset(-2, -2);
@@ -348,18 +366,55 @@ public class DataPlotView extends View {
     }
 
     protected void drawData(Canvas canvas) {
-        if(mData != null) {
-            float x_ = -1;
-            if (mVisibleDataSet.size() > 0) {
-                for (Measurement m : mVisibleDataSet) {
-                    float x = timeToX(m.getTimestamp());
-                    if(x - x_ >= 1f) {
-                        float y = valueToY(m.getValue());
-                        canvas.drawPoint(x, y, mDataPaint);
-                        x_ = x;
+        if(mVisibleDataSet != null && mVisibleDataSet.size() > 0) {
+           Measurement m0 = mVisibleDataSet.get(0);
+            float x_ = timeToX(m0.getTimestamp());
+            float y_ = valueToY(m0.getValue());
+            for (Measurement m : mVisibleDataSet) {
+                float x = timeToX(m.getTimestamp());
+                if(x - x_ >= 1f) {
+                    float y = valueToY(m.getValue());
+                    //canvas.drawPoint(x, y, mDataPaint);
+                    canvas.drawCircle(x, y, mDataPointSize, mDataPaint);
+                    if(mDrawLines) {
+                        canvas.drawLine(x_, y_, x, y, mDataPaint);
                     }
+                    x_ = x;
+                    y_ = y;
                 }
             }
+        }
+    }
+
+    protected void drawXAxisLabel(Canvas canvas) {
+        Rect labelBounds = new Rect();
+        String label = mTimeFormatter.getUnitSystemName();
+        mGraticulePaint.getTextBounds(label, 0, label.length(), labelBounds);
+        float labelTop = labelBounds.height() * 2f + getTopPaddingOffset();
+        float labelRight = (getWidth() - labelBounds.width())/2;
+        labelBounds.inset(-2, -2);
+        canvas.drawRect(labelBounds, mGraticuleTextBgPaint);
+        canvas.drawText(label, labelRight, labelTop, mGraticulePaint);
+    }
+
+    protected void drawYAxisLabel(Canvas canvas) {
+        if(mRangeFormatter != null) {
+            RectF labelBounds = new RectF();
+            String label = mRangeFormatter.getUnitSystemName();
+            Matrix m = new Matrix();
+            m.setRotate(90f);
+            Path labelPath = new Path();
+            mGraticulePaint.getTextPath(label, 0, label.length(), 0, 0, labelPath);
+            labelPath.transform(m);
+            labelPath.computeBounds(labelBounds, false);
+            float labelTop = (getHeight() - labelBounds.height()) / 2;
+            float labelRight = getWidth() - labelBounds.width() * 1.5f;
+            labelBounds.inset(-2, -2);
+            labelBounds.offset(labelRight, labelTop);
+            m.setTranslate(labelRight, labelTop);
+            labelPath.transform(m);
+            canvas.drawRect(labelBounds, mGraticuleTextBgPaint);
+            canvas.drawPath(labelPath, mGraticulePaint);
         }
     }
 
@@ -413,9 +468,10 @@ public class DataPlotView extends View {
         float dataRangeMax = Float.MIN_VALUE;
         synchronized (mData) {
             for (Measurement m : mData) {
+                float displayValue = convertRangeValueToDisplayUnits(m.getValue());
                 if (mDomainMin <= m.getTimestamp() && m.getTimestamp() <= mDomainMax) {
-                    dataRangeMin = Math.min(mRangeMin, m.getValue());
-                    dataRangeMax = Math.max(mRangeMax, m.getValue());
+                    dataRangeMin = Math.min(mRangeMin, displayValue);
+                    dataRangeMax = Math.max(mRangeMax, displayValue);
                 }
             }
         }
@@ -450,14 +506,21 @@ public class DataPlotView extends View {
             mDataDomainMin = 0;
             mDataDomainMax = 0;
             if(mData.size() > 0) {
+                if(mStartTimeStamp == 0)
+                    mStartTimeStamp = mData.get(0).getTimestamp();
+
+                //range unit setup
+                mRangeSystemUnit = mData.get(0).getUnit();
+                ISystemFactory systemFactory = SystemFactoryBroker.getSystemFactory();
+                mRangeConverter = systemFactory.getUnitConverterFactory().createUnitConverter(mRangeSystemUnit);
+                DisplayUnitManager displayUnitManager = systemFactory.getDisplayUnitManager();
+                mRangeDisplayUnit = displayUnitManager.getDisplayUnit(mRangeSystemUnit);
+                if(mRangeFormatter == null) {
+                    mRangeFormatter = displayUnitManager.getUnitFormatter(mRangeSystemUnit);
+                }
 
                 mDataDomainMin = mData.get(0).getTimestamp();
                 mDataDomainMax = mData.get(mData.size()-1).getTimestamp();
-                if(mStartTimeStamp == 0)
-                    mStartTimeStamp = mDataDomainMin;
-                if(mRangeFormatter == null) {
-                    mRangeFormatter = new UnitFormatter(mData.get(0).getUnit());
-                }
             }
 
             if(mAutoScroll) {
@@ -477,7 +540,7 @@ public class DataPlotView extends View {
             //select data withing visible domain
             for (Measurement m : mData) {
                 if (mDomainMin <= m.getTimestamp() && m.getTimestamp() <= mDomainMax) {
-                    mVisibleDataSet.add(m);
+                    mVisibleDataSet.add(convertMeasurement(m));
                 }
             }
 
@@ -510,13 +573,22 @@ public class DataPlotView extends View {
                 if (domainStart > m.getTimestamp())
                     continue;
                 else if (domainEnd > m.getTimestamp())
-                    dataSet.add(m);
+                    dataSet.add(convertMeasurement(m));
                 else
                     break;
             }
         }
 
         return dataSet;
+    }
+
+    public float convertRangeValueToDisplayUnits(float systemValue) {
+        return mRangeConverter.convert(mRangeSystemUnit, systemValue, mRangeDisplayUnit);
+    }
+
+    public Measurement convertMeasurement(Measurement systemMeasurement) {
+        float value = convertRangeValueToDisplayUnits(systemMeasurement.getValue());
+        return new Measurement(value, systemMeasurement.getTimestamp(), mRangeDisplayUnit);
     }
 
     public void startRegressionTool() {
