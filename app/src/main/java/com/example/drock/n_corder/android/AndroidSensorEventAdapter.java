@@ -16,7 +16,9 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 
 import com.example.drock.n_corder.Measurement;
+import com.example.drock.n_corder.MeasurementFactory;
 import com.example.drock.n_corder.MeasurementSource;
+import com.example.drock.n_corder.SystemFactoryBroker;
 import com.example.drock.n_corder.units.UnitConverter;
 import com.example.drock.n_corder.units.UnitConverterFactory;
 
@@ -24,11 +26,13 @@ public class AndroidSensorEventAdapter extends MeasurementSource implements Sens
     int mValueSelector;
     int mFromUnit;
     UnitConverter mUnitConverter;
+    MeasurementFactory mMeasurementFactory;
 
     public AndroidSensorEventAdapter(int valueSelector, int unit) {
         mValueSelector = valueSelector;
         mFromUnit = unit;
         mUnitConverter = UnitConverterFactory.newInstance().createUnitConverter(unit);
+        mMeasurementFactory = SystemFactoryBroker.getSystemFactory().getMeasurementFactory();
     }
 
     @Override
@@ -45,6 +49,6 @@ public class AndroidSensorEventAdapter extends MeasurementSource implements Sens
     protected Measurement CreateMeasurement(SensorEvent event) {
         float value = event.values[mValueSelector];
         value = mUnitConverter.convert(mFromUnit, value);
-        return new Measurement(value, event.timestamp, mUnitConverter.getDefaultUnit());
+        return mMeasurementFactory.createMeasurement(value, mUnitConverter.getDefaultUnit(), event.timestamp);
     }
 }

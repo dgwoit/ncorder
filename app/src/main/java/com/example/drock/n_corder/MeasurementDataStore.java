@@ -2,6 +2,7 @@ package com.example.drock.n_corder;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.location.Location;
 import android.os.Environment;
 import android.support.v7.app.AlertDialog;
 import android.widget.Toast;
@@ -64,21 +65,32 @@ public class MeasurementDataStore extends Observable {
             FileOutputStream fOut = new FileOutputStream(file);
             OutputStreamWriter osw = new OutputStreamWriter(fOut);
 
-            // Write the string to the file
-            String line = "time,value\n";
-            osw.write(line);
+
 
             Object[] data;
             synchronized (mData) {
                 data = getData().toArray();
             }
+
             if(data.length > 0) {
-                long baseTime = ((Measurement)data[0]).getTimestamp();
+                // Write the string to the file
+                Measurement firstMeasurement  =(Measurement)data[0];
+                String line = (firstMeasurement.getLocation() == null) ?
+                        "time,value\n" : "time,value,lat,lon\n";
+                osw.write(line);
+
+                long baseTime = firstMeasurement.getTimestamp();
                 for (Object o : data) {
                     ///hard-code measurement serializer for now
                     Measurement m = (Measurement)o;
                     double time = (m.getTimestamp() - baseTime) / 1000000000.;
-                    line = String.format("%s,%f\n", time, m.getValue());
+                    Location location = m.getLocation();
+                    if(location == null) {
+                        line = String.format("%s,%f\n", time, m.getValue());
+                    } else {
+                        line = String.format("%s,%f,%f,%f\n", time, m.getValue(),
+                                location.getLatitude(), location.getLongitude());
+                    }
                     osw.write(line);
                 }
             }

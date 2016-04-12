@@ -11,10 +11,13 @@
 */
 package com.example.drock.n_corder;
 
+import android.location.Location;
+
 public class Measurement {
     protected float value;
     protected long timestamp; //in nanoseconds
     protected int unit;
+    protected Location location;
 
     public Measurement(float v, long t, int u) {
         this.value = v;
@@ -29,4 +32,6 @@ public class Measurement {
     }
     public long getTimestamp() { return this.timestamp; }
     public int getUnit() { return unit; }
+    public Location getLocation() {return location;}
+    public void setLocation(Location l) {location = l;}
 }

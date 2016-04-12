@@ -3,7 +3,9 @@ package com.example.drock.n_corder.IOIO;
 import com.example.drock.n_corder.IMeasurementSink;
 import com.example.drock.n_corder.IMeasurementSource;
 import com.example.drock.n_corder.Measurement;
+import com.example.drock.n_corder.MeasurementFactory;
 import com.example.drock.n_corder.MeasurementSource;
+import com.example.drock.n_corder.SystemFactoryBroker;
 import com.example.drock.n_corder.units.UnitConverter;
 import com.example.drock.n_corder.units.UnitConverterFactory;
 import com.example.drock.n_corder.units.Units;
@@ -18,6 +20,7 @@ public class AnalogPinReader extends IOIODeviceDriver implements IMeasurementSou
     protected int mPinNo;
     protected MeasurementSource dispatcher = new MeasurementSource();
     protected UnitConverter mUnitConverter;
+    protected MeasurementFactory mMeasurementFactory;
 
     static IOIODeviceDriver newInstance(int pinNo) {
         return new AnalogPinReader(pinNo);
@@ -25,6 +28,7 @@ public class AnalogPinReader extends IOIODeviceDriver implements IMeasurementSou
 
     public AnalogPinReader(int pinNo) {
         this.mPinNo = pinNo;
+        mMeasurementFactory = SystemFactoryBroker.getSystemFactory().getMeasurementFactory();
     }
 
     //measurement publisher methods
@@ -61,12 +65,12 @@ public class AnalogPinReader extends IOIODeviceDriver implements IMeasurementSou
     public void Update() {
         try {
             float value = Read();
+            int unit = getUnit();
             if(Units.getSubUnitType(getUnit()) != 0) {
                 value = mUnitConverter.convert(getUnit(), value);
-                update(new Measurement(value, System.nanoTime(), mUnitConverter.getDefaultUnit()));
-            } else { //unit type, unit sub-type unknown - no conversion
-                update(new Measurement(value, System.nanoTime(), getUnit()));
+                unit = mUnitConverter.getDefaultUnit();
             }
+            update(mMeasurementFactory.createMeasurement(value, unit));
         }
         catch(ConnectionLostException e) {
 

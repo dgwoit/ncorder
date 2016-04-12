@@ -42,6 +42,7 @@ dependencies {
     compile 'com.github.ytai.ioio:IOIOLibAndroidAccessory:5.05'
     compile 'com.github.ytai.ioio:IOIOLibAndroidDevice:5.05'
     compile 'gov.nist.math:jama:1.0.3'
+    compile 'me.franfernandez:fftpack:0.1'
 }
 
 repositories {

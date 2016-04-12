@@ -11,7 +11,9 @@
 */
 package com.example.drock.n_corder;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
@@ -27,6 +29,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        SystemFactoryBroker.initSystemFactory(getApplicationContext());
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -48,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-            Intent intent = new Intent(this, DisplayUnitSettingsActivity.class);
+            Intent intent = new Intent(this, SettingsActivity.class);
             startActivity(intent);
             return true;
         }
@@ -57,12 +60,24 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void showOnboardSensorsMessage(View view) {
-        Intent intent = new Intent(this, AndroidSensorListActivity.class);
-        startActivity(intent);
+        startActivityByClass(AndroidSensorListActivity.class);
     }
 
     public void showIOIOConnectActivity(View view) {
-        Intent intent = new Intent(this, IOIOConfigureConnectionActivity.class);
-        startActivity(intent);
+        startActivityByClass(IOIOConfigureConnectionActivity.class);
+    }
+
+    public void showAudioSpectrumActivity(View view) {
+        startActivityByClass(AudioSpectrumActivity.class);
+    }
+
+    public void startActivityByClass(Class activityClass) {
+        //apply preferences
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        boolean useLocationInfo = preferences.getBoolean("pref_record_location", false);
+        SystemFactoryBroker.getSystemFactory().getMeasurementFactory().setUseLocationInfo(useLocationInfo);
+
+        //start activity
+        startActivity(new Intent(this, activityClass));
     }
 }

@@ -7,4 +7,7 @@
     <dimen name="text_margin">16dp</dimen>
     <dimen name="axis_label_size">10dp</dimen>
     <dimen name="data_plot_point_size">1dp</dimen>
+    <dimen name="spectral_view_xhair_inner_size">0.8dp</dimen>
+    <dimen name="spectral_view_xhair_outer_size">1.5dp</dimen>
+    <dimen name="spectral_view_text_size">16dp</dimen>
 </resources>
