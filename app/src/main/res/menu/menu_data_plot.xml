@@ -7,24 +7,22 @@
         android:icon="@android:drawable/ic_menu_view"
         android:title="Analyze"
         app:showAsAction="ifRoom|withText" />
-    <!--<item android:id="@+id/action_new"
-        android:icon="@android:drawable/ic_menu_revert"
-        android:title="@string/action_new"
-        app:showAsAction="ifRoom|withText" />-->
     <item
         android:id="@+id/action_save"
         android:icon="@android:drawable/ic_menu_save"
         android:title="@string/action_save"
         app:showAsAction="ifRoom|withText" />
     <item
-        android:id="@+id/action_use_points"
-        android:title="Use Points"
-        />
-    <item
-        android:id="@+id/action_use_lines"
-        android:title="Use Lines"
+        android:id="@+id/toggle_lines"
+        android:title="Toggle Lines"
         />
     <item android:id="@+id/action_settings" android:title="@string/action_settings"
         android:icon="@android:drawable/ic_menu_preferences"
-        android:orderInCategory="100" app:showAsAction="never" />
+        app:showAsAction="never" />
+    <item android:id="@+id/action_time_settings" android:title="Time Settings"
+        app:showAsAction="never" />
+    <!--<item android:id="@+id/action_new"
+    android:icon="@android:drawable/ic_menu_revert"
+    android:title="@string/action_new"
+    app:showAsAction="ifRoom|withText" />-->
 </menu>

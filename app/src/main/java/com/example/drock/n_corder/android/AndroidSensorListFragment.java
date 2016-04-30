@@ -115,7 +115,6 @@ public class AndroidSensorListFragment extends Fragment implements AbsListView.O
             mSensorItems.add(new SensorItem(sensor));
         }
 
-        // TODO: Change Adapter to display your content
         mAdapter = new ArrayAdapter<SensorItem>(getActivity(),
                 android.R.layout.simple_list_item_1, android.R.id.text1, mSensorItems);
     }
@@ -157,7 +156,7 @@ public class AndroidSensorListFragment extends Fragment implements AbsListView.O
         if (null != mListener) {
             // Notify the active callbacks interface (the activity, if the
             // fragment is attached to one) that an item has been selected.
-            mListener.onFragmentInteraction(mSensorItems.get(position).getType());
+            mListener.onFragmentInteraction(mSensorItems.get(position).getType(), mSensorItems.get(position).mSensor.getName());
         }
     }
 
@@ -186,7 +185,7 @@ public class AndroidSensorListFragment extends Fragment implements AbsListView.O
      */
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
-        public void onFragmentInteraction(int id);
+        public void onFragmentInteraction(int id, String deviceName);
     }
 
 }

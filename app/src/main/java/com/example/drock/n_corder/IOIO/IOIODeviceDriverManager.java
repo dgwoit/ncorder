@@ -29,7 +29,7 @@ import ioio.lib.api.IOIO;
 import ioio.lib.api.exception.ConnectionLostException;
 
 public class IOIODeviceDriverManager {
-    public final static String IOIO = "IOIO"; //default stream identifier
+    //public final static String IOIO = "IOIO"; //default stream identifier
 
     //sorry for the singleton
     private static IOIODeviceDriverManager instance = new IOIODeviceDriverManager();
@@ -55,7 +55,7 @@ public class IOIODeviceDriverManager {
         driverInfos.add(new IOIODeviceDriverInfo("ACS712 Current Sensor", IOIOConnectionInfo.BUS_TYPE_A2D, ACS712CurrentSensor.class));
         driverInfos.add(new IOIODeviceDriverInfo("Grove 80cm Infrared Proximity Sensor", IOIOConnectionInfo.BUS_TYPE_A2D, GroveInfraredProximitySensor.class));
         driverInfos.add(new IOIODeviceDriverInfo("Grove Hall Sensor", IOIOConnectionInfo.BUS_TYPE_A2D, GroveHallSensor.class));
-        driverInfos.add(new IOIODeviceDriverInfo("Analog to Digital 0-5 volts", IOIOConnectionInfo.BUS_TYPE_A2D, AnalogPinReader.class));
+        driverInfos.add(new IOIODeviceDriverInfo("Analog to Digital 0-5 volts", IOIOConnectionInfo.BUS_TYPE_A2D, AnalogVoltageReader.class));
     }
 
     // assigns/associates a driver instance to a connection
@@ -93,7 +93,7 @@ public class IOIODeviceDriverManager {
                 if (entry.getName().compareTo(driverId) == 0) {
                     IOIODeviceDriver driver = entry.createInstance(basePin);
                     SensorStreamBroker streamBroker = SensorStreamBroker.getInstance();
-                    streamBroker.RegisterStream(IOIO, (IMeasurementSource) driver);
+                    streamBroker.RegisterStream(entry.getName(), (IMeasurementSource) driver);
                     AssignDriver(connectionId, driver);
                 }
             }

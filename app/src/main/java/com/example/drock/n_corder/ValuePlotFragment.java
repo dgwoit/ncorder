@@ -13,19 +13,18 @@ package com.example.drock.n_corder;
 
 
 import android.content.Intent;
-import android.graphics.Canvas;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.NavUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.drock.n_corder.units.UnitFormatter;
+import com.example.drock.n_corder.units.UnitSystemInfo;
+import com.example.drock.n_corder.units.UnitSystemTable;
+import com.example.drock.n_corder.units.Units;
 
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
@@ -89,12 +88,27 @@ public class ValuePlotFragment extends DataViewFragment {
             return true;
         }
 
-        if (id == R.id.action_use_lines) {
-            mDataView.setDrawLines(true);
+        if (id == R.id.toggle_lines) {
+            mDataView.setDrawLines(!mDataView.getDrawLines());
+            return true;
         }
 
-        if (id == R.id.action_use_points) {
-            mDataView.setDrawLines(false);
+        if(id == R.id.action_settings) {
+            UnitSystemTable mUnitSystemTable = new UnitSystemTable();
+            UnitSystemInfo unitSystemInfo = mUnitSystemTable.getUnitSystemInfo(mFormatter.getUnit());
+            Intent intent = new Intent(getActivity(), DisplayUnitTypeSettingActivity.class);
+            intent.putExtra(ParamNames.UNIT_SYSTEM, Integer.toString(unitSystemInfo.getUnitSystem()));
+            startActivity(intent);
+            return true;
+        }
+
+        if(id == R.id.action_time_settings) {
+            UnitSystemTable mUnitSystemTable = new UnitSystemTable();
+            UnitSystemInfo unitSystemInfo = mUnitSystemTable.getUnitSystemInfo(Units.TIME);
+            Intent intent = new Intent(getActivity(), DisplayUnitTypeSettingActivity.class);
+            intent.putExtra(ParamNames.UNIT_SYSTEM, Integer.toString(unitSystemInfo.getUnitSystem()));
+            startActivity(intent);
+            return true;
         }
 
         return super.onOptionsItemSelected(item);
@@ -113,9 +127,10 @@ public class ValuePlotFragment extends DataViewFragment {
                 @Override
                 public void update(Observable observable, Object data) {
                     mDataView.onDataChanged();
+
                     List<Measurement> measurements = (List<Measurement>)data;
                     if(null == mFormatter && measurements.size() > 0) {
-                        mFormatter = new UnitFormatter(measurements.get(0).getUnit());
+                        mFormatter = SystemFactoryBroker.getSystemFactory().getDisplayUnitManager().getUnitFormatter(measurements.get(0).getUnit());
                         getActivity().runOnUiThread(new Runnable() {
                             @Override
                             public void run() {

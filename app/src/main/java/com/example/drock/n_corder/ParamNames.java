@@ -15,4 +15,7 @@ public class ParamNames {
     public static final String STREAM_NAME = "streamName";
     public static final String DISPLAY_PARAMS = "displayParams";
     public static final String UNIT_SYSTEM = "unitSystem";
+    public static final String DEVICE_NAME="deviceName";
+    public static final String SENSOR_TYPE="sensorType";
+    public static final String SAMPLING_INTERVAL="samplingInterval";
 }

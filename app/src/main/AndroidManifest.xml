@@ -140,12 +140,17 @@
             android:label="Settings"
             android:theme="@style/AppTheme.NoActionBar"
             />
+        <activity
+            android:name=".android.OnboardLocationDetailActivity"
+            android:label="Select a Source"
+            android:theme="@style/AppTheme.NoActionBar"
+            />
 
-        <receiver android:name=".LocationReceiver" android:exported="false">
+        <!--<receiver android:name=".LocationReceiver" android:exported="false">
             <intent-filter>
                 <action android:name="com.example.drock.n_corder.location_services.ACTION_LOCATION"/>
             </intent-filter>
-        </receiver>
+        </receiver>-->
         <!-- ATTENTION: This was auto-generated to add Google Play services to your project for
              App Indexing.  See https://g.co/AppIndexing/AndroidStudio for more information. -->
         <meta-data

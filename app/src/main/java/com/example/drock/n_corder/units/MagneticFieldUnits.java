@@ -15,4 +15,5 @@ public class MagneticFieldUnits {
     public static final int UNKNOWN = Units.makeUnit(Units.MAGNETIC_FIELD_STRENGH, 0); //uncalibrated/unknown
     public static final int TESLA = Units.makeUnit(Units.MAGNETIC_FIELD_STRENGH, 1); //AKA webers per meter squared
     public static final int MICRO_TESLA  = Units.makeUnit(Units.MAGNETIC_FIELD_STRENGH, 2); //value used by internal magnetometry
+    public static final int GAUSS = Units.makeUnit(Units.MAGNETIC_FIELD_STRENGH, 3); //one ten thousandth of a Tesla
 }

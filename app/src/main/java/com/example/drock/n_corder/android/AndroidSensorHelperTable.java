@@ -29,16 +29,16 @@ public class AndroidSensorHelperTable {
     }
 
     void Init() {
-        String[] xyz = {"x", "y", "z"};
+        String[] xyz = {"x", "y", "z", "magnitude"};
         mHelpers = new AndroidSensorHelper[] {
-                new AndroidSensorHelper(Sensor.TYPE_ACCELEROMETER, new String[]{"x acceleration", "y acceleration", "z acceleration"}, Units.ACCELERATION),
+                new AndroidSensorHelper(Sensor.TYPE_ACCELEROMETER, xyz, Units.ACCELERATION),
                 new AndroidSensorHelper(Sensor.TYPE_AMBIENT_TEMPERATURE, new String[]{"ambient temperature"}, TemperatureUnits.CELSIUS),
                 new AndroidSensorHelper(Sensor.TYPE_GAME_ROTATION_VECTOR, new String[]{"rotation vector x", "rotation vector y", "rotation vector z"}, Units.ANGULAR_SPEED),
                 new AndroidSensorHelper(Sensor.TYPE_GEOMAGNETIC_ROTATION_VECTOR, xyz, Units.ANGULAR_SPEED),
                 new AndroidSensorHelper(Sensor.TYPE_GRAVITY, xyz, Units.ACCELERATION),
                 new AndroidSensorHelper(Sensor.TYPE_GYROSCOPE, xyz, AngleUnits.RADIANS),
                 new AndroidSensorHelper(Sensor.TYPE_GYROSCOPE_UNCALIBRATED, xyz, AngleUnits.RADIANS),
-                new AndroidSensorHelper(Sensor.TYPE_HEART_RATE, xyz, Units.HEART_RATE),
+                new AndroidSensorHelper(Sensor.TYPE_HEART_RATE, new String[]{"rate"}, Units.HEART_RATE),
                 new AndroidSensorHelper(Sensor.TYPE_LIGHT, new String[]{"ambient light level"}, Units.ILLUMINANCE),
                 new AndroidSensorHelper(Sensor.TYPE_LINEAR_ACCELERATION, xyz, Units.ACCELERATION),
                 new AndroidSensorHelper(Sensor.TYPE_MAGNETIC_FIELD, xyz, MagneticFieldUnits.MICRO_TESLA),

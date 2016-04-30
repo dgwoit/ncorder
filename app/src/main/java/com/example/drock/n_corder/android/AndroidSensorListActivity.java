@@ -17,6 +17,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.app.*;
 
+import com.example.drock.n_corder.ParamNames;
 import com.example.drock.n_corder.R;
 import com.example.drock.n_corder.android.AndroidSensorConfigurationActivity;
 import com.example.drock.n_corder.android.AndroidSensorListFragment;
@@ -54,9 +55,10 @@ public class AndroidSensorListActivity extends AppCompatActivity implements Andr
 
 
     @Override
-    public void onFragmentInteraction(int type) {
+    public void onFragmentInteraction(int type, String name) {
         Intent intent = new Intent(this, AndroidSensorConfigurationActivity.class);
-        intent.putExtra(AndroidSensorConfigurationActivity.SENSOR_TYPE, type);
+        intent.putExtra(ParamNames.SENSOR_TYPE, type);
+        intent.putExtra(ParamNames.DEVICE_NAME, name);
         startActivity(intent);
     }
 }

@@ -25,7 +25,7 @@ public class SpectralView extends View {
     private Canvas mDataCanvas;
     private int mActiveColumn = 0;
     private Paint mFrontPaint;
-    private int mBlockSize = 256;
+    private int mBlockSize = 512;
     private float mHzPerBin;
     private PointF mTouchPoint;
     private float mCrossHairInnerWidth;

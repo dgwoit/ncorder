@@ -31,6 +31,12 @@ public class UnitSystemInfo {
                 return unitTypeInfo;
         }
 
+        //get the default for the unit type
+        for(UnitTypeInfo unitTypeInfo: mUnitTypes) {
+            if(mSystemUnit == unitTypeInfo.getType())
+                return unitTypeInfo;
+        }
+
         return null;
     }
 }

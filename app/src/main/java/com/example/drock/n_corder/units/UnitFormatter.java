@@ -19,13 +19,13 @@ import java.util.Map;
 
 
 public class UnitFormatter implements IUnitFormatter {
-    int mUnit;
-    int mSystemUnit;
-    String mSuffix;
-    String mUnitName;
-    String mUnitSystemName;
-    UnitConverter mUnitConverter;
-
+    protected int mUnit;
+    protected int mSystemUnit;
+    protected String mSuffix;
+    protected String mUnitName;
+    protected String mUnitSystemName;
+    protected UnitConverter mUnitConverter;
+    protected int mSignificantDigits;
 
     //this probably should be turned into a factor for turning out textual unit information
     public UnitFormatter(int unit) {
@@ -43,7 +43,10 @@ public class UnitFormatter implements IUnitFormatter {
         mUnitSystemName = unitSystemInfo.getUnitSystemName();
         mUnitConverter = systemFactory.getUnitConverterFactory().createUnitConverter(unit);
         mSystemUnit = unitSystemInfo.getSystemUnit();
+        mSignificantDigits = 3;
     }
+
+    public void setSignificantDigits(int digits) {mSignificantDigits = digits;}
 
     public String formatSystem(float v) {
         return format(mUnitConverter.convert(mSystemUnit, v, mUnit));
@@ -51,14 +54,14 @@ public class UnitFormatter implements IUnitFormatter {
 
     @Override
     public String format(float v) {
-        return String.format("%f %s", v, mSuffix);
+        return String.format("%."+mSignificantDigits+"E %s", v, mSuffix);
     }
 
     @Override
     public String format(long v) {
         return String.format("%d %s", v, mSuffix);
     }
-    
+    public int getUnit() { return mUnit; }
     public String getUnitName() { return mUnitName; }
     public String getUnitSystemName() { return mUnitSystemName; }
 }

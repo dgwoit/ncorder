@@ -23,6 +23,7 @@ import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.text.TextPaint;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
@@ -54,7 +55,7 @@ public class DataPlotView extends View {
 
     private TextPaint mTextPaint;
     private UnitFormatter mRangeFormatter;
-    private UnitFormatter mTimeFormatter = new UnitFormatter(Units.TIME);
+    private UnitFormatter mTimeFormatter;
 
     private List<Measurement> mVisibleDataSet;
     private float mRangeMin;
@@ -63,8 +64,8 @@ public class DataPlotView extends View {
     private long mStartTimeStamp = 0;
     private long mDataDomainMin = 0;
     private long mDataDomainMax = 0;
-    private long mDomainMin;
-    private long mDomainMax;
+    private long mDomainMin=0;
+    private long mDomainMax=0;
     private long mDomain;
     private long mTimePerPixel = 100000000;
 
@@ -131,13 +132,23 @@ public class DataPlotView extends View {
         mTextPaint.setFlags(Paint.ANTI_ALIAS_FLAG);
         mTextPaint.setTextAlign(Paint.Align.LEFT);
 
-
+        mTimeFormatter = SystemFactoryBroker.getSystemFactory().getDisplayUnitManager().getUnitFormatter(Units.TIME);
     }
 
     List<Measurement> mData;
     protected synchronized void attachDataSource(List<Measurement> data) {
         synchronized (data) {
             mData = data;
+
+            mDataDomainMin = 0;
+            mDataDomainMax = 0;
+            if (mData.size() > 0) {
+                mDataDomainMin = mData.get(0).getTimestamp();
+                mDataDomainMax = mData.get(mData.size() - 1).getTimestamp();
+                mDomainMin = mDataDomainMin;
+                mDomainMax = mDataDomainMax;
+                mDomain = mDomainMax - mDomainMin;
+            }
         }
     }
 
@@ -151,16 +162,20 @@ public class DataPlotView extends View {
         postInvalidate();
     }
 
-    protected void setDrawLines(boolean b) {
+    public void setDrawLines(boolean b) {
         mDrawLines = b;
     }
+
+    public boolean getDrawLines() { return mDrawLines; }
 
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-        // TODO: consider storing these as member variables to reduce
-        // allocations per draw cycle.
+        try {
+
+            // TODO: consider storing these as member variables to reduce
+            // allocations per draw cycle.
 //        int paddingLeft = getPaddingLeft();
 //        int paddingTop = getPaddingTop();
 //        int paddingRight = getPaddingRight();
@@ -169,29 +184,32 @@ public class DataPlotView extends View {
 //        int contentWidth = getWidth() - paddingLeft - paddingRight;
 //        int contentHeight = getHeight() - paddingTop - paddingBottom;
 
-        determineVisibleSet();
-        if(mVisibleDataSet != null && mVisibleDataSet.size() > 0) {
-            if(mTool != null)
-                mTool.onDraw(canvas);
-            drawGraticule(canvas);
-            drawData(canvas);
-            drawXAxisLabel(canvas);
-            drawYAxisLabel(canvas);
-        }
+            determineVisibleSet();
+            if (mVisibleDataSet != null && mVisibleDataSet.size() > 0) {
+                if (mTool != null)
+                    mTool.onDraw(canvas);
+                drawGraticule(canvas);
+                drawData(canvas);
+                drawXAxisLabel(canvas);
+                drawYAxisLabel(canvas);
+            }
 
-        // Draw the text.
+            // Draw the text.
 //        canvas.drawText(mExampleString,
 //                paddingLeft + (contentWidth - mTextWidth) / 2,
 //                paddingTop + (contentHeight + mTextHeight) / 2,
 //                mTextPaint);
 
 
-        // Draw the example drawable on top of the text.
+            // Draw the example drawable on top of the text.
 //        if (mExampleDrawable != null) {
 //            mExampleDrawable.setBounds(paddingLeft, paddingTop,
 //                    paddingLeft + contentWidth, paddingTop + contentHeight);
 //            mExampleDrawable.draw(canvas);
 //        }
+        } catch(Exception ex) {
+            Log.e("DataPlotView", ex.getCause().toString());
+        }
     }
 
     private class GestureListener extends GestureDetector.SimpleOnGestureListener {
@@ -209,6 +227,7 @@ public class DataPlotView extends View {
         @Override
         public boolean onDoubleTap(MotionEvent event) {
             mAutoScroll = true; //resume auto scroll
+            invalidate();
             return true;
         }
 
@@ -228,6 +247,7 @@ public class DataPlotView extends View {
             float rangeChange = -mRange * (distanceY / (float)getHeight());
             adjustDomain(domainChange);
             adjustRange(rangeChange);
+            invalidate();
             return true;
         }
     }
@@ -248,7 +268,7 @@ public class DataPlotView extends View {
                 if(xZoomFactor > 1f && mDomain < originalDomain) {
                     mDomain = originalDomain;
                 }
-                mDomainMin = (mDomainMin - mDomainMax) / 2 - mDomain / 2;
+                mDomainMin = (mDomainMin + mDomainMax) / 2 - mDomain / 2;
                 mDomainMax = mDomainMin + mDomain;
                 adjustDomain(0);
             }
@@ -269,6 +289,7 @@ public class DataPlotView extends View {
                 mRangeMax = mRangeMin + mRange;
                 adjustRange(0);
             }
+            invalidate();
             return true;
         }
 
@@ -309,6 +330,12 @@ public class DataPlotView extends View {
         rangePerDivision *= Math.pow(10, -orderOfRangeMagnitude);
         rangePerDivision = (float)Math.ceil(rangePerDivision);
         rangePerDivision *= Math.pow(10, orderOfRangeMagnitude);
+        if(rangePerDivision / mRange > 0.4) { //show half intervals
+            rangePerDivision /= 2;
+        }
+        if(rangePerDivision / mRange > 0.3) { //show quarter intervals
+            rangePerDivision /= 2;
+        }
 
        // draw horizontal lines
         float startValue = mRangeMin - mRangeMin % rangePerDivision;
@@ -335,7 +362,7 @@ public class DataPlotView extends View {
         timePerDivision = Math.ceil(timePerDivision);
         timePerDivision *= Math.pow(10, orderOfMagnitude);
         long timePerDivisionL = (long)timePerDivision;
-        long timeVal = mDomainMin - mDomainMin % timePerDivisionL;
+        long timeVal = (mDomainMin) - (mDomainMin - mStartTimeStamp) % timePerDivisionL;
 
         for(float x = xStart;x <= xEnd; timeVal += timePerDivisionL) {
             x = timeToX(timeVal);
@@ -450,12 +477,13 @@ public class DataPlotView extends View {
                 mDataDomainMax = mData.get(mData.size() - 1).getTimestamp();
             }
 
+            mDomain = mDomainMax - mDomainMin;
             mDomainMin = mDomainMin + change;
             if(mDomainMin > mDataDomainMax) {
-                mDomainMin = mDataDomainMax - mDomain;
+                mDomainMin = mDataDomainMax;
             }
-            if (mDomainMin < mDataDomainMin) {
-                mDomainMin = mDataDomainMin;
+            if (mDomainMax < mDataDomainMin) {
+                mDomainMin = mDataDomainMin - mDomain;
             }
 
             mDomainMax = mDomainMin + mDomain;
@@ -470,8 +498,8 @@ public class DataPlotView extends View {
             for (Measurement m : mData) {
                 float displayValue = convertRangeValueToDisplayUnits(m.getValue());
                 if (mDomainMin <= m.getTimestamp() && m.getTimestamp() <= mDomainMax) {
-                    dataRangeMin = Math.min(mRangeMin, displayValue);
-                    dataRangeMax = Math.max(mRangeMax, displayValue);
+                    dataRangeMin = Math.min(dataRangeMin, displayValue);
+                    dataRangeMax = Math.max(dataRangeMax, displayValue);
                 }
             }
         }
@@ -479,13 +507,14 @@ public class DataPlotView extends View {
 
         float testRangeMin = mRangeMin + change;
         float testRangeMax = mRangeMax + change;
-        if(testRangeMax > dataRangeMax) {
-            testRangeMax = Math.min(dataRangeMax + dataRange / 2, testRangeMax);
-            testRangeMin = testRangeMax - dataRange;
+        float range = mRangeMax - mRangeMin;
+        if(testRangeMin > dataRangeMax) {
+            testRangeMax = dataRangeMax; //Math.min(dataRangeMax + dataRange / 2, testRangeMax);
+            testRangeMin = testRangeMax + dataRange;
         }
-        else if(testRangeMin < dataRangeMin) {
-            testRangeMin = Math.max(dataRangeMin - dataRange / 2, testRangeMin);
-            testRangeMax = testRangeMin + dataRange;
+        else if(testRangeMax < dataRangeMin) {
+            testRangeMax = dataRangeMin;
+            testRangeMin = dataRangeMin - dataRange; //Math.max(dataRangeMin - dataRange / 2, testRangeMin);
         }
 
         mRangeMin = testRangeMin;

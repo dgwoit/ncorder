@@ -36,10 +36,11 @@ public class AudioSpectrumFragment extends Fragment {
     protected final int mSamplingRate = 8000;
     protected RealDoubleFFT mAudioTransform;
     protected AsyncTask mStreamProcessor;
-    protected final int mTransformBlockSize = 256;
+    protected final int mTransformBlockSize = 512;
     protected final short[] mAudioStreamBuffer = new short[mTransformBlockSize];
     protected final double[] mTransformBlock = new double[mTransformBlockSize];
-    protected final double mHzPerBin = (double)mSamplingRate / (double)mTransformBlockSize;
+    //transform block contains complex values, so need to multiply by 0.5, also to account for sampling theorem limit
+    protected final double mHzPerBin = 0.5*(double)mSamplingRate / (double)mTransformBlockSize;
 
     @Override
     public void onStop() {
@@ -83,10 +84,15 @@ public class AudioSpectrumFragment extends Fragment {
                 protected Object doInBackground(Object[] params) {
                     while(!this.isCancelled()) {
                         try {
-                            int readResult = mAudioSource.read(mAudioStreamBuffer, 0, mAudioStreamBuffer.length);
-                            for (int i = 0; i < readResult && i < mTransformBlockSize; i++) {
-                                mTransformBlock[i] = mAudioStreamBuffer[i] / 32768.0;
+                            int readTotal = 0;
+                            while(readTotal < mTransformBlockSize && !this.isCancelled()) {
+                                int readResult = mAudioSource.read(mAudioStreamBuffer, 0, mAudioStreamBuffer.length-readTotal);
+                                for (int i = readTotal; i < (readResult+readTotal) && i < mTransformBlockSize; i++) {
+                                    mTransformBlock[i] = mAudioStreamBuffer[i-readTotal] / 32768.0;
+                                }
+                                readTotal += readResult;
                             }
+
                             mAudioTransform.ft(mTransformBlock);
                             mSpectralView.addFFTData(mTransformBlock, mHzPerBin);
                         } catch (Exception ex) {

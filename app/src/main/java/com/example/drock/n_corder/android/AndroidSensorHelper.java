@@ -26,4 +26,8 @@ public class AndroidSensorHelper {
     public int getValueCount() {return mValueInfo.length;}
     public String getValueDescription(int index ) { return mValueInfo[index]; }
     public int getUnitType() {return mUnitType;}
+
+    public AndroidSensorEventAdapter newAdapter(int valueSelector, String moniker) {
+            return new AndroidSensorEventAdapterVectorMagnitude(valueSelector, mUnitType, moniker);
+    }
 }

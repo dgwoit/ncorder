@@ -12,9 +12,11 @@
 package com.example.drock.n_corder.IOIO;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Binder;
 import android.os.IBinder;
 import android.app.NotificationManager;
+import android.preference.PreferenceManager;
 
 import com.example.drock.n_corder.R;
 
@@ -52,10 +54,13 @@ public class IOIOAccessService extends IOIOService {
     protected IOIOLooper createIOIOLooper() {
         return new BaseIOIOLooper() {
             private DigitalOutput mLed;
+            private int mSamplingInterval;
 
             @Override
             protected void setup() throws ConnectionLostException,
                     InterruptedException {
+                SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(IOIOAccessService.this);
+                mSamplingInterval = preferences.getInt("sampling_interval", 100);
                 mLed = ioio_.openDigitalOutput(IOIO.LED_PIN);
                 IOIODeviceDriverManager.getInstance().RealizeDrivers(ioio_);
             }
@@ -66,7 +71,7 @@ public class IOIOAccessService extends IOIOService {
                 mLed.write(true);
                 for(IOIODeviceDriver driver: IOIODeviceDriverManager.getInstance().getDrivers())
                     driver.Update();
-                Thread.sleep(100); //add sleep for now
+                Thread.sleep(mSamplingInterval); //add sleep for now
                 mLed.write(false);
             }
         };

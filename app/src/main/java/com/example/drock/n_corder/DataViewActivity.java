@@ -23,6 +23,7 @@ import android.view.MenuItem;
 import android.view.WindowManager;
 
 import com.example.drock.n_corder.IOIO.IOIOAccessService;
+import com.example.drock.n_corder.units.UnitSystemInfo;
 
 public class DataViewActivity extends AppCompatActivity {
     private String mStreamName;
@@ -33,14 +34,6 @@ public class DataViewActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_data_view);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setTitle("Live Data");
-        setSupportActionBar(toolbar);
-        ActionBar actionBar = getSupportActionBar();
-        if(actionBar != null)
-            actionBar.setDisplayHomeAsUpEnabled(true);
-
-
         if(null != savedInstanceState) {
             mStreamName = savedInstanceState.getString(ParamNames.STREAM_NAME);
             mDisplayParams = savedInstanceState.getString(ParamNames.DISPLAY_PARAMS);
@@ -49,6 +42,13 @@ public class DataViewActivity extends AppCompatActivity {
             mStreamName = intent.getStringExtra(ParamNames.STREAM_NAME);
             mDisplayParams = intent.getStringExtra(ParamNames.DISPLAY_PARAMS);
         }
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setTitle((mStreamName.length() > 0) ? "Live Data" : "Recorded Data");
+        setSupportActionBar(toolbar);
+        ActionBar actionBar = getSupportActionBar();
+        if(actionBar != null)
+            actionBar.setDisplayHomeAsUpEnabled(true);
 
         android.support.v4.app.FragmentManager fm = getSupportFragmentManager();
         android.support.v4.app.Fragment fragment = fm.findFragmentById(R.id.fragmentContainer);
@@ -113,11 +113,6 @@ public class DataViewActivity extends AppCompatActivity {
         if(id == android.R.id.home) {
             finish();
             return true;
-        }
-
-        if(id == R.id.action_settings) {
-            Intent intent = new Intent(this, DisplayUnitSettingsActivity.class);
-            startActivity(intent);
         }
 
         android.support.v4.app.FragmentManager fm = getSupportFragmentManager();

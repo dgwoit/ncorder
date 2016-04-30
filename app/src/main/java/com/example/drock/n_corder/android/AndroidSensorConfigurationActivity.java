@@ -23,42 +23,31 @@ import android.support.v7.widget.Toolbar;
 
 import com.example.drock.n_corder.ParamNames;
 import com.example.drock.n_corder.R;
+import com.example.drock.n_corder.SingleFragmentActivity;
 import com.example.drock.n_corder.ViewTypeActivity;
 
-public class AndroidSensorConfigurationActivity extends AppCompatActivity implements AndroidSensorDetailFragment.OnListFragmentInteractionListener {
-    public static final String SENSOR_TYPE = "SENSOR_TYPE";
+public class AndroidSensorConfigurationActivity extends SingleFragmentActivity implements AndroidSensorDetailFragment.OnListFragmentInteractionListener {
     private int mSensorType;
+    private String mDeviceName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_android_sensor_configuration);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
         if(null != savedInstanceState) {
-            mSensorType = savedInstanceState.getInt(SENSOR_TYPE);
+            mSensorType = savedInstanceState.getInt(ParamNames.SENSOR_TYPE);
+            mDeviceName = savedInstanceState.getString(ParamNames.DEVICE_NAME);
         } else {
             Intent intent = getIntent();
-            mSensorType = intent.getIntExtra(SENSOR_TYPE, 0);
+            mSensorType = intent.getIntExtra(ParamNames.SENSOR_TYPE, 0);
+            mDeviceName = intent.getStringExtra(ParamNames.DEVICE_NAME);
         }
 
-        //android sensor service
+        super.onCreate(savedInstanceState);
         startService(new Intent(this, AndroidSensorService.class));
         doBindService();
-
-        android.support.v4.app.FragmentManager fm = getSupportFragmentManager();
-        android.support.v4.app.Fragment fragment = fm.findFragmentById(R.id.fragmentContainer);
-        if(null ==  fragment) {
-            fragment = createFragment();
-            fm.beginTransaction().add(R.id.fragmentContainer, fragment).commit();
-        }
     }
 
     protected Fragment createFragment() {
-        return AndroidSensorDetailFragment.newInstance(mSensorType);
+        return AndroidSensorDetailFragment.newInstance(mSensorType, mDeviceName);
     }
 
     @Override
@@ -110,11 +99,12 @@ public class AndroidSensorConfigurationActivity extends AppCompatActivity implem
     };
 
     @Override
-    public void onListFragmentInteraction(AndroidSensorDetailFragment.ListItem item) {
-        mBoundService.BindSensor(item.getSensorType(), item.getValueSelector(), item.getUnit());
+    public void onListFragmentInteraction(Object object) {
+        AndroidSensorDetailFragment.BindingInfo bindingInfo = (AndroidSensorDetailFragment.BindingInfo)object;
+        mBoundService.BindSensor(bindingInfo.sensorType, bindingInfo.adapter);
 
         Intent intent = new Intent(this, ViewTypeActivity.class);
-        intent.putExtra(ParamNames.STREAM_NAME, "Android");
+        intent.putExtra(ParamNames.STREAM_NAME, bindingInfo.adapter.getMoniker());
         startActivity(intent);
     }
 }

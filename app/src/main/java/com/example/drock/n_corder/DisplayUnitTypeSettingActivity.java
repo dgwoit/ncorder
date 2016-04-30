@@ -35,7 +35,7 @@ public class DisplayUnitTypeSettingActivity extends SingleFragmentActivity imple
     @Override
     public void onListFragmentInteraction(Object object) {
         UnitTypeInfo unitTypeInfo = (UnitTypeInfo)object;
-        DisplayUnitManager displayUnitManager = new DisplayUnitManager();
+        DisplayUnitManager displayUnitManager = new DisplayUnitManager(this);
         displayUnitManager.setDisplayUnit(unitTypeInfo.getUnitSystem(), unitTypeInfo.getType());
         finish();
     }

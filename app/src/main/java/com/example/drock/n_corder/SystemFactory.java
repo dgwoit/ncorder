@@ -25,7 +25,7 @@ public class SystemFactory implements ISystemFactory {
     @Override
     public DisplayUnitManager getDisplayUnitManager() {
         if(null == mDisplayUnitManager)
-            mDisplayUnitManager = new DisplayUnitManager();
+            mDisplayUnitManager = new DisplayUnitManager(mApplicationContext);
         return mDisplayUnitManager;
     }
 

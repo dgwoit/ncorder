@@ -13,9 +13,10 @@ package com.example.drock.n_corder.units;
 
 public class MagneticFieldUnitConverter extends UnitConversionTable {
     protected float[][] mConversionTable = {
-            {1, 0, 0}, //unknown - no conversion available
-            {0, 1, 1e6f},
-            {0, 1e-6f, 1}
+            {1, 0, 0, 0}, //unknown - no conversion available
+            {0, 1, 1e6f, 1e4f},
+            {0, 1e-6f, 1, 1e-2f},
+            {0, 1e-4f, 1e2f, 1}
     };
 
     @Override

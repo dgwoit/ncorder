@@ -23,14 +23,16 @@ import com.example.drock.n_corder.units.UnitConverter;
 import com.example.drock.n_corder.units.UnitConverterFactory;
 
 public class AndroidSensorEventAdapter extends MeasurementSource implements SensorEventListener {
-    int mValueSelector;
-    int mFromUnit;
-    UnitConverter mUnitConverter;
-    MeasurementFactory mMeasurementFactory;
+    protected int mValueSelector;
+    protected int mFromUnit;
+    protected UnitConverter mUnitConverter;
+    protected MeasurementFactory mMeasurementFactory;
+    protected String mMoniker;
 
-    public AndroidSensorEventAdapter(int valueSelector, int unit) {
+    public AndroidSensorEventAdapter(int valueSelector, int unit, String moniker) {
         mValueSelector = valueSelector;
         mFromUnit = unit;
+        mMoniker = moniker;
         mUnitConverter = UnitConverterFactory.newInstance().createUnitConverter(unit);
         mMeasurementFactory = SystemFactoryBroker.getSystemFactory().getMeasurementFactory();
     }
@@ -42,13 +44,15 @@ public class AndroidSensorEventAdapter extends MeasurementSource implements Sens
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-        Measurement m = CreateMeasurement(event);
+        Measurement m = createMeasurement(event);
         update(m);
     }
 
-    protected Measurement CreateMeasurement(SensorEvent event) {
+    protected Measurement createMeasurement(SensorEvent event) {
         float value = event.values[mValueSelector];
         value = mUnitConverter.convert(mFromUnit, value);
         return mMeasurementFactory.createMeasurement(value, mUnitConverter.getDefaultUnit(), event.timestamp);
     }
+
+    public String getMoniker() { return mMoniker; }
 }

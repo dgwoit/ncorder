@@ -17,6 +17,21 @@
     <string name="local_service_connected">Connected to IOIOAccessService</string>
     <string name="local_service_disconnected">Disconnected from IOIOAccessService</string>
     <string name="title_activity_android_sensor_configuration">Sensor Settings</string>
+    <string name="enterFileName">Enter file name:</string>
+    <string name="saveButtonText">Save</string>
+    <string name="cancelButtonText">Cancel</string>
+    <string name="cannotSaveFileMessage">Cannot save file</string>
+    <string name="fileNameFirstMessage">Please enter the file name first</string>
+    <string name="okButtonText">OK</string>
+    <string name="loadButtonText">Load</string>
+    <string name="accessDenied">Access denied</string>
+    <string name="missingFile">No such file</string>
+    <string name="newFolderButtonText">New folder</string>
+    <string name="newFolderDialogMessage">Create new folder</string>
+    <string name="createButtonText">Create</string>
+    <string name="folderCreationOk">Folder created sucessfully</string>
+    <string name="folderCreationError">Error while creating folder</string>
+    <string name="information">Information</string>
     <string name="large_text">
         "Material is the metaphor.\n\n"
 

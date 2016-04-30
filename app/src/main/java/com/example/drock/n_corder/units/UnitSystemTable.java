@@ -10,17 +10,22 @@ public class UnitSystemTable {
         mUnitSystems.put(Units.UNKNOWN, new UnitSystemInfo(Units.UNKNOWN, "UNKNOWN", Units.UNKNOWN)
             .addUnit(Units.UNKNOWN, "Undefined", ""));
         mUnitSystems.put(Units.ACCELERATION, new UnitSystemInfo(Units.ACCELERATION, "ACCELERATION", Units.ACCELERATION)
-            .addUnit(Units.ACCELERATION, "Meters per Second per Second", "m/s²"));
+                .addUnit(Units.ACCELERATION, "Meters per Second²", "m/s²")
+                .addUnit(Units.ACCELERATION, "Feet per Second²", "ft/s²"));
         mUnitSystems.put(Units.ANGLE, new UnitSystemInfo(Units.ANGLE,"ANGLE",AngleUnits.RADIANS)
             .addUnit(AngleUnits.DEGREES, "Degrees", "º")
             .addUnit(AngleUnits.RADIANS, "Radians", "rad"));
         mUnitSystems.put(Units.MAGNETIC_FIELD_STRENGH, new UnitSystemInfo(Units.MAGNETIC_FIELD_STRENGH,"MAGNETIC FIELD STRENGTH",MagneticFieldUnits.TESLA)
             .addUnit(MagneticFieldUnits.TESLA, "Tesla", "T")
-            .addUnit(MagneticFieldUnits.MICRO_TESLA, "Microtesla", "\u03BCT"));
-        mUnitSystems.put(Units.ANGULAR_SPEED, new UnitSystemInfo(Units.ANGULAR_SPEED,"ANGULAR SPEED",Units.ANGULAR_SPEED));
-        mUnitSystems.put(Units.PRESSURE, new UnitSystemInfo(Units.PRESSURE,"PRESSURE",PressureUnits.PASCAL)
+            .addUnit(MagneticFieldUnits.MICRO_TESLA, "Microtesla", "\u03BCT")
+            .addUnit(MagneticFieldUnits.GAUSS, "Gauss", "G"));
+        mUnitSystems.put(Units.ANGULAR_SPEED, new UnitSystemInfo(Units.ANGULAR_SPEED,"ANGULAR SPEED",Units.ANGULAR_SPEED)
+            .addUnit(AngularSpeedUnits.RADIANS_PER_SECOND, "Radians per Second", "Rad/s")
+            .addUnit(AngularSpeedUnits.DEGREES_PER_SECOND, "Degreess per Second", "º/s"));
+        mUnitSystems.put(Units.PRESSURE, new UnitSystemInfo(Units.PRESSURE,"PRESSURE",PressureUnits.KILOPASCAL)
             .addUnit(PressureUnits.MILLIBAR, "Millibar", "mb")
-            .addUnit(PressureUnits.PASCAL, "Pascal", "Pa"));
+            .addUnit(PressureUnits.KILOPASCAL, "Kilopascals", "kPa")
+            .addUnit(PressureUnits.PSI, "Pounds per Square Inch", "psi"));
         mUnitSystems.put(Units.DISTANCE, new UnitSystemInfo(Units.DISTANCE,"DISTANCE",DistanceUnits.METERS)
             .addUnit(DistanceUnits.CENTIMETERS, "Centimeters", "cm")
             .addUnit(DistanceUnits.METERS, "Meters", "m"));
@@ -38,12 +43,21 @@ public class UnitSystemTable {
             .addUnit(Units.STEPS, "Steps", "steps"));
         mUnitSystems.put(Units.CURRENT, new UnitSystemInfo(Units.CURRENT,"CURRENT",Units.CURRENT)
             .addUnit(Units.CURRENT, "Amps", "A"));
+        mUnitSystems.put(Units.VOLTAGE, new UnitSystemInfo(Units.VOLTAGE,"VOLTAGE",Units.VOLTAGE)
+                .addUnit(Units.VOLTAGE, "Volts", "V"));
         mUnitSystems.put(Units.MASS, new UnitSystemInfo(Units.MASS,"MASS",Units.MASS)
             .addUnit(Units.MASS, "Kilogram", "kg"));
         mUnitSystems.put(Units.WEIGHT, new UnitSystemInfo(Units.WEIGHT,"WEIGHT",Units.WEIGHT)
             .addUnit(Units.WEIGHT, "Newtons", "N"));
-        mUnitSystems.put(Units.TIME, new UnitSystemInfo(Units.TIME,"TIME",Units.TIME)
-            .addUnit(Units.TIME, "Seconds", "s"));
+        mUnitSystems.put(Units.TIME, new UnitSystemInfo(Units.TIME,"TIME",TimeUnits.SECONDS)
+            .addUnit(TimeUnits.SECONDS, "Seconds", "s")
+            .addUnit(TimeUnits.MINUTES, "Minutes", "MM:SS")
+            .addUnit(TimeUnits.HOURS, "Hours", "HH:MM:SS")
+        );
+        mUnitSystems.put(Units.FORCE, new UnitSystemInfo(Units.FORCE,"FORCE",Units.FORCE)
+                .addUnit(Units.FORCE, "Newtons", "N"));
+        mUnitSystems.put(Units.SPEED, new UnitSystemInfo(Units.SPEED,"SPEED",Units.SPEED)
+                .addUnit(Units.SPEED, "Meters per Second", "m/s"));
     }
 
     public Map<Integer, UnitSystemInfo> getUnitSystems() {

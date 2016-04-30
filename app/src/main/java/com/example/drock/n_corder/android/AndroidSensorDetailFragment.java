@@ -23,8 +23,11 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 
+import com.example.drock.n_corder.ListFragmentBase;
+import com.example.drock.n_corder.ParamNames;
 import com.example.drock.n_corder.R;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -34,47 +37,10 @@ import java.util.List;
  * Activities containing this fragment MUST implement the {@link OnListFragmentInteractionListener}
  * interface.
  */
-public class AndroidSensorDetailFragment extends Fragment implements AbsListView.OnItemClickListener {
-
-    private static final String ARG_SENSOR_TYPE = "sensor-type";
+public class AndroidSensorDetailFragment extends ListFragmentBase implements AbsListView.OnItemClickListener {
     // TODO: Customize parameters
-    private int mColumnCount = 1;
-    private OnListFragmentInteractionListener mListener;
     private int mSensorType;
-    /**
-     * The Adapter which will be used to populate the ListView/GridView with
-     * Views.
-     */
-    private ListAdapter mAdapter;
-
-    /**
-     * The fragment's ListView/GridView.
-     */
-    private AbsListView mListView;
-
-    protected class ListItem {
-        int mSensorType;
-        String mValueDescription;
-        int mValueSelector;
-        int mUnit;
-
-
-        public ListItem(int sensorType, String valueDescription, int valueSelector, int unit) {
-            mSensorType = sensorType;
-            mValueDescription = valueDescription;
-            mValueSelector = valueSelector;
-            mUnit = unit;
-        }
-
-        @Override
-        public String toString() {
-            return mValueDescription;
-        }
-
-        public int getSensorType() { return mSensorType; }
-        public int getValueSelector() { return mValueSelector; }
-        public int getUnit() { return mUnit; }
-    }
+    private String mDeviceName;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -85,102 +51,45 @@ public class AndroidSensorDetailFragment extends Fragment implements AbsListView
 
     // TODO: Customize parameter initialization
     @SuppressWarnings("unused")
-    public static AndroidSensorDetailFragment newInstance(int sensorType) {
-        Log.d("AndroidSensorDetailFragment", "newInstance");
+    public static AndroidSensorDetailFragment newInstance(int sensorType, String deviceName) {
         AndroidSensorDetailFragment fragment = new AndroidSensorDetailFragment();
         Bundle args = new Bundle();
-        args.putInt(ARG_SENSOR_TYPE, sensorType);
+        args.putInt(ParamNames.SENSOR_TYPE, sensorType);
+        args.putString(ParamNames.DEVICE_NAME, deviceName);
         fragment.setArguments(args);
         return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        Log.d("AndroidSensorDetailFragment", "onCreate");
-        super.onCreate(savedInstanceState);
-
         if (getArguments() != null) {
-            mSensorType = getArguments().getInt(ARG_SENSOR_TYPE);
+            mSensorType = getArguments().getInt(ParamNames.SENSOR_TYPE);
+            mDeviceName = getArguments().getString(ParamNames.DEVICE_NAME);
         }
 
-        CreateListContent();
-        mAdapter = new ArrayAdapter<ListItem>(getActivity(),
-                android.R.layout.simple_list_item_1, android.R.id.text1, mListItems);
+        super.onCreate(savedInstanceState);
+    }
+
+    public class BindingInfo {
+        public AndroidSensorEventAdapter adapter;
+        public int sensorType;
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        Log.d("AndroidSensorDetailFragment", "onCreateView");
-        View view = inflater.inflate(R.layout.fragment_item, container, false);
-
-        // Set the adapter
-        // Set the adapter
-        mListView = (AbsListView) view.findViewById(android.R.id.list);
-        ((AdapterView<ListAdapter>) mListView).setAdapter(mAdapter);
-
-        // Set OnItemClickListener so we can be notified on item clicks
-        mListView.setOnItemClickListener(this);
-
-        return view;
-    }
-
-
-    List<ListItem> mListItems;
-    protected void CreateListContent() {
-        Log.d("AndroidSensorDetailFragment", "getListContent");
+    protected void createListItems() {
+        ArrayList<ListItem> listItems;
         AndroidSensorHelperTable helpers = new AndroidSensorHelperTable();
         AndroidSensorHelper helper = helpers.getEntry(mSensorType);
-        mListItems = new LinkedList<ListItem>();
+        listItems = new ArrayList<ListItem>();
         for(int i = 0; i < helper.getValueCount(); i++) {
             String description = helper.getValueDescription(i);
-            ListItem item = new ListItem(mSensorType, description, i, helper.getUnitType());
-            mListItems.add(item);
+            BindingInfo bindingInfo = new BindingInfo();
+            bindingInfo.sensorType = mSensorType;
+            bindingInfo.adapter = helper.newAdapter(i, mDeviceName);
+            ListItem item = new ListItem(description, bindingInfo);
+            listItems.add(item);
         }
+        setListItems(listItems);
     }
-
-    @Override
-    public void onAttach(Activity context) {
-        Log.d("AndroidSensorDetailFragment", "onAttach");
-        super.onAttach(context);
-        if (context instanceof OnListFragmentInteractionListener) {
-            mListener = (OnListFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnListFragmentInteractionListener");
-        }
-    }
-
-    @Override
-    public void onDetach() {
-        Log.d("AndroidSensorDetailFragment", "onDetach");
-        super.onDetach();
-        mListener = null;
-    }
-
-    @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        if (null != mListener) {
-            // Notify the active callbacks interface (the activity, if the
-            // fragment is attached to one) that an item has been selected.
-            mListener.onListFragmentInteraction(mListItems.get(position));
-        }
-    }
-
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnListFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onListFragmentInteraction(ListItem item);
-    }
-
 
 }

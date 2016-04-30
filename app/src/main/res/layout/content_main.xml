@@ -18,6 +18,12 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:text="Onboard Speed/Bearing/Altitude"
+        android:onClick="showOnboardLocationActivity"
+        />
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:text="@string/button_ioio_connect"
         android:onClick="showIOIOConnectActivity"/>
     <Button
@@ -25,4 +31,10 @@
         android:layout_height="wrap_content"
         android:text="View Audio"
         android:onClick="showAudioSpectrumActivity"/>
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Load Data"
+        android:onClick="loadData" />
+
 </LinearLayout>

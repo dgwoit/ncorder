@@ -12,6 +12,7 @@
 package com.example.drock.n_corder.units;
 
 public class PressureUnits {
-    public static final int PASCAL = Units.makeUnit(Units.PRESSURE, 1);
+    public static final int KILOPASCAL = Units.makeUnit(Units.PRESSURE, 1);
     public static final int MILLIBAR = Units.makeUnit(Units.PRESSURE, 2);
+    public static final int PSI = Units.makeUnit(Units.PRESSURE, 3);
 }

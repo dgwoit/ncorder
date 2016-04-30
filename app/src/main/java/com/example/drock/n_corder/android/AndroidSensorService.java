@@ -39,9 +39,8 @@ public class AndroidSensorService extends Service{
         return mBinder;
     }
 
-    public void BindSensor(int sensorType, int valueSelector, int unit) {
-        AndroidSensorEventAdapter adapter = new AndroidSensorEventAdapter(valueSelector, unit);
-        SensorStreamBroker.getInstance().RegisterStream("Android", adapter);
+    public void BindSensor(int sensorType, AndroidSensorEventAdapter adapter) {
+        SensorStreamBroker.getInstance().RegisterStream(adapter.getMoniker(), adapter);
         SensorManager sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         Sensor sensor = sensorManager.getDefaultSensor(sensorType);
         sensorManager.registerListener((SensorEventListener)adapter, sensor, SensorManager.SENSOR_DELAY_NORMAL);

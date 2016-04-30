@@ -13,13 +13,14 @@ package com.example.drock.n_corder.units;
 
 public class PressureUnitConverter extends UnitConversionTable {
     protected final static float[][] mConversionTable = {
-            {1, 0, 0},
-            {0, 1, 1e-2f},
-            {0, 1e2f, 1}
+            {1, 0, 0, 0},
+            {0, 1, 1e2f, 0.145038f},
+            {0, 1e-2f, 1, 0.0145038f},
+            {0, 6.894757f, 68.94757f, 1}
     };
 
     @Override
-    public int getDefaultUnit() { return PressureUnits.PASCAL; }
+    public int getDefaultUnit() { return PressureUnits.KILOPASCAL; }
 
     @Override
     public float[][] getConversionTable() { return mConversionTable; }

@@ -20,9 +20,17 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.content.Intent;
+import android.widget.Toast;
 
 import com.example.drock.n_corder.IOIO.IOIOConfigureConnectionActivity;
+import com.example.drock.n_corder.IOIO.SamplingIntervalActivity;
 import com.example.drock.n_corder.android.AndroidSensorListActivity;
+import com.example.drock.n_corder.android.OnboardLocationDetailActivity;
+import com.example.drock.n_corder.fileselector.FileOperation;
+import com.example.drock.n_corder.fileselector.FileSelector;
+import com.example.drock.n_corder.fileselector.OnHandleFileListener;
+
+import java.io.IOException;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -63,8 +71,12 @@ public class MainActivity extends AppCompatActivity {
         startActivityByClass(AndroidSensorListActivity.class);
     }
 
+    public void showOnboardLocationActivity(View view) {
+        startActivityByClass(OnboardLocationDetailActivity.class);
+    }
+
     public void showIOIOConnectActivity(View view) {
-        startActivityByClass(IOIOConfigureConnectionActivity.class);
+        startActivityByClass(SamplingIntervalActivity.class);
     }
 
     public void showAudioSpectrumActivity(View view) {
@@ -79,5 +91,25 @@ public class MainActivity extends AppCompatActivity {
 
         //start activity
         startActivity(new Intent(this, activityClass));
+    }
+
+    public void loadData(View view) {
+        OnHandleFileListener loadFileListener = new OnHandleFileListener() {
+            @Override
+            public void handleFile(final String filePath) {
+                try {
+                    MeasurementDataStore dataStore = MeasurementDataStore.getInstance();
+                    dataStore.load(filePath);
+                    Intent intent = new Intent(MainActivity.this, DataViewActivity.class);
+                    intent.putExtra(ParamNames.STREAM_NAME, ""); //no stream to attach to, pre-recorded data
+                    intent.putExtra(ParamNames.DISPLAY_PARAMS, DataViewFactory.ViewType.DataPlot);
+                    startActivity(intent);
+                } catch(IOException ex) {
+                    Toast.makeText(MainActivity.this, ex.getMessage(), Toast.LENGTH_LONG);
+                }
+            }
+        };
+        String[] fileFilter = {".csv"};
+        new FileSelector(this, FileOperation.LOAD, loadFileListener, fileFilter).show();
     }
 }
