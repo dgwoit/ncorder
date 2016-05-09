@@ -1,0 +1,63 @@
+package com.example.drock.n_corder;
+
+import com.example.drock.n_corder.Measurement;
+import com.example.drock.n_corder.RegressionServices;
+import com.example.drock.n_corder.units.TimeUnits;
+import com.example.drock.n_corder.units.Units;
+
+import junit.framework.TestCase;
+
+import org.junit.Test;
+
+import java.lang.Exception;
+import java.lang.Override;
+import java.util.LinkedList;
+import java.util.concurrent.TimeUnit;
+import Jama.Matrix;
+import static org.junit.Assert.*;
+
+
+public class RegressionServicesUnitTest extends TestCase {
+    RegressionServices mRegressor;
+
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
+        mRegressor = new RegressionServices();
+    }
+
+    @Override
+    protected void tearDown() throws Exception {
+        mRegressor = null;
+        super.tearDown();
+
+    }
+
+    public void testLinearRegression() {
+        List<Measurement> data = new LinkedList<>();
+        float a = 2f, b = 3f;
+        for(int x = 0; x < 10; x++) {
+            float y = a+b*(float)x;
+            long t = (long)x * TimeUnits.NSEC_PER_SEC;
+            Measurement m = new Measurement(y, t, Units.UNKNOWN);
+            data.add(m);
+        }
+        Matrix results = mRegressor.regressLinear(data);
+        assertThat(results.get(0, 0), is(closeTo(a, 0.001)));
+        assertThat(results.get(1, 0), is(closeTo(b, 0.001)));
+    }
+
+    public void testQuadraticRegression() {
+        List<Measurement> data = new LinkedList<>();
+        float a = 2f, b = -3f, c = 3f;
+        for(int x = 0; x < 10; x++) {
+            float y = a + b*(float)x+c*x*x;
+            long t = (long)x * TimeUnits.NSEC_PER_SEC;
+            Measurement m = new Measurement(y, t, Units.UNKNOWN);
+            data.add(m);
+        }
+        mRegressor.regressQuadratic()
+        assertThat(results.get(0, 0), is(closeTo(a, 0.001)));
+        assertThat(results.get(1, 0), is(closeTo(b, 0.001)));
+    }
+}

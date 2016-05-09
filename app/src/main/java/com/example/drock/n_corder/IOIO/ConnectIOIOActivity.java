@@ -34,7 +34,6 @@ import ioio.lib.api.exception.ConnectionLostException;
 public class ConnectIOIOActivity extends Activity {
     private IOIOAccessService mBoundService;
     private boolean mIsBound = false;
-    private static final String IOIO = "IOIO";
     public static final String CONNECTION_ID = "connection-id";
     public static final String SENSOR_NAME = "sensor-name";
     private final String CONNECT_IOIO_ACTIVITY = "ConnectIOIOActivity";
@@ -79,7 +78,7 @@ public class ConnectIOIOActivity extends Activity {
                     @Override
                     public void run() {
                         Intent intent = new Intent(ConnectIOIOActivity.this, ViewTypeActivity.class);
-                        intent.putExtra(ParamNames.STREAM_NAME, IOIO);
+                        intent.putExtra(ParamNames.STREAM_NAME, mSensorName);
                         startActivity(intent);
                     }
                 });

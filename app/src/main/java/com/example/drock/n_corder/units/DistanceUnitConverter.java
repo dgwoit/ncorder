@@ -13,9 +13,10 @@ package com.example.drock.n_corder.units;
 
 public class DistanceUnitConverter extends UnitConversionTable {
     protected static final float[][] mConversionTable = {
-            {1, 0, 0},
-            {0, 1, 100f},
-            {0, 1e-2f, 1}
+            {1, 0, 0, 0}, //unknown
+            {0, 1, 100f, 100f/2.54f}, //meters
+            {0, 1e-2f, 1, 1f/2.54f}, //centimeters
+            {0, 2.54f/100f, 2.54f, 1} //inches
     };
 
     @Override

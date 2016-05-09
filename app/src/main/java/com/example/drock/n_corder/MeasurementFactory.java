@@ -45,9 +45,11 @@ public class MeasurementFactory {
             helper.requestLocationUpdates(mLocationListener);
         } else {
             //mLocationReceiver = null;
-            helper.removeUpdates(mLocationListener);
-            mLocationListener = null;
-            helper.stopLocationUpdates();
+            if(mLocationListener != null) {
+                helper.removeUpdates(mLocationListener);
+                mLocationListener = null;
+                helper.stopLocationUpdates();
+            }
         }
     }
 }

@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.util.Log;
 
 public class LocationManagerHelper {
     protected Context mApplicationContext;
@@ -40,7 +41,12 @@ public class LocationManagerHelper {
     }
 
     public void removeUpdates(LocationListener listener) {
-        mLocationManager.removeUpdates(listener);
+        try {
+            if(mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER))
+                mLocationManager.removeUpdates(listener);
+        } catch(Exception ex) {
+            Log.e("LocMgrHlpr", ex.toString());
+        }
     }
 
     LocationReceiver getLocationReceiver() { return mLocationReceiver; }

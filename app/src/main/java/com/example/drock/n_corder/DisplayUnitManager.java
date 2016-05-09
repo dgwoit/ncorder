@@ -3,6 +3,7 @@ package com.example.drock.n_corder;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
 import com.example.drock.n_corder.units.AccelerationUnits;
 import com.example.drock.n_corder.units.AngleUnits;
@@ -10,6 +11,7 @@ import com.example.drock.n_corder.units.DisplayUnitFormatter;
 import com.example.drock.n_corder.units.DistanceUnits;
 import com.example.drock.n_corder.units.MagneticFieldUnits;
 import com.example.drock.n_corder.units.PressureUnits;
+import com.example.drock.n_corder.units.SpeedUnits;
 import com.example.drock.n_corder.units.TemperatureUnits;
 import com.example.drock.n_corder.units.TimeUnitFormatter;
 import com.example.drock.n_corder.units.TimeUnits;
@@ -54,7 +56,7 @@ public class DisplayUnitManager {
             mDisplayUnits.put(Units.TEMPERATURE, new Setting(TemperatureUnits.CELSIUS, "unit_temperature"));
             mDisplayUnits.put(Units.TIME, new Setting(TimeUnits.SECONDS, "unit_time"));
             mDisplayUnits.put(Units.WEIGHT, new Setting(Units.WEIGHT, "unit_weight"));
-            mDisplayUnits.put(Units.SPEED, new Setting(Units.SPEED, "unit_speed"));
+            mDisplayUnits.put(Units.SPEED, new Setting(SpeedUnits.METERS_PER_SECOND, "unit_speed"));
             mDisplayUnits.put(Units.FORCE, new Setting(Units.FORCE, "unit_force"));
             mDisplayUnits.put(Units.VOLTAGE, new Setting(Units.VOLTAGE, "unit_voltage"));
         }
@@ -95,7 +97,14 @@ public class DisplayUnitManager {
     }
 
     int getSignificantDigits() {
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(mContext);
-        return preferences.getInt("pref_sigificant_digits", 3);
+        try {
+            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(mContext);
+            int significantDigits = Integer.parseInt(preferences.getString("pref_significant_digits", "3"));
+            return significantDigits;
+        } catch(Exception ex) {
+            Log.e("DisUnitMgr", ex.toString());
+        }
+
+        return 3;
     }
 }

@@ -16,7 +16,7 @@
         android:id="@+id/toggle_lines"
         android:title="Toggle Lines"
         />
-    <item android:id="@+id/action_settings" android:title="@string/action_settings"
+    <item android:id="@+id/action_settings" android:title="@string/action_unit_settings"
         android:icon="@android:drawable/ic_menu_preferences"
         app:showAsAction="never" />
     <item android:id="@+id/action_time_settings" android:title="Time Settings"

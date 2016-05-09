@@ -54,7 +54,30 @@ public class UnitFormatter implements IUnitFormatter {
 
     @Override
     public String format(float v) {
-        return String.format("%."+mSignificantDigits+"E %s", v, mSuffix);
+        String str;
+        if(v == 0) { //can't use log function on 0
+            str = String.format("%." + (mSignificantDigits-1) +"f %s", v, mSuffix);
+        } else {
+            float original = v;
+            int power = (int) (Math.log10(Math.abs(v)));
+            float powerFactor = (float) Math.pow(10, -power + mSignificantDigits);
+            v = (float) (v * powerFactor);
+            v = Math.round(v);
+            v = (float) (v / powerFactor);
+            if (power >= 0) {
+                if (power <= 0)
+                    str = String.format("%." + (mSignificantDigits - power) + "f %s", v, mSuffix);
+                else if (power < mSignificantDigits) {
+                    str = String.format("%" + (power + 1) + "." + (mSignificantDigits - power - 1) + "f %s", v, mSuffix);
+                } else
+                    str = String.format("%." + (mSignificantDigits - 1) + "E %s", v, mSuffix);
+            } else {
+                str = String.format("%." + (mSignificantDigits - 1) + "E %s", v, mSuffix);
+                //str = String.format("%."+(mSignificantDigits-power)+"f %s", v, mSuffix);
+            }
+        }
+
+        return str;
     }
 
     @Override

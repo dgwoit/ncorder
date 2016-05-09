@@ -48,7 +48,8 @@ public class IOIOConfigureConnectionActivity extends AppCompatActivity implement
     @Override
     public void onListFragmentInteraction(Object object) {
         Intent intent = new Intent(this, IOIOSensorConfigurationActivity.class);
-        intent.putExtra(IOIOSensorConfigurationActivity.CONNECTION_ID, ((IOIOConnectionInfo)object).getName());
+        String streamMoniker = ((IOIOConnectionInfo)object).getName();
+        intent.putExtra(IOIOSensorConfigurationActivity.CONNECTION_ID, streamMoniker);
         startActivity(intent);
     }
 }

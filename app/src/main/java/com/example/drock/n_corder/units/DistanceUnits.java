@@ -15,4 +15,5 @@ package com.example.drock.n_corder.units;
 public class DistanceUnits {
     public final static int METERS = Units.makeUnit(Units.DISTANCE, 1);
     public final static int CENTIMETERS = Units.makeUnit(Units.DISTANCE, 2);
+    public final static int INCHES = Units.makeUnit(Units.DISTANCE, 3);
 }

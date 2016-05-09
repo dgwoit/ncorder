@@ -13,7 +13,9 @@ package com.example.drock.n_corder;
 
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -89,7 +91,10 @@ public class ValuePlotFragment extends DataViewFragment {
         }
 
         if (id == R.id.toggle_lines) {
-            mDataView.setDrawLines(!mDataView.getDrawLines());
+            boolean drawLines = !mDataView.getDrawLines();
+            mDataView.setDrawLines(drawLines);
+            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+            preferences.edit().putBoolean("data_plot_view_show_lines", drawLines).commit();
             return true;
         }
 
@@ -121,6 +126,10 @@ public class ValuePlotFragment extends DataViewFragment {
         View view = inflater.inflate(R.layout.fragment_value_plot, container, false);
         mDataView = (DataPlotView)view.findViewById(R.id.data_plot_view);
         if(mDataView != null) {
+            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+            boolean showLines = preferences.getBoolean("data_plot_view_show_lines", false);
+            mDataView.setDrawLines(showLines);
+
             List<Measurement> data = MeasurementDataStore.getInstance().getData();
             mDataView.attachDataSource(data);
             Observer observer = new Observer() {

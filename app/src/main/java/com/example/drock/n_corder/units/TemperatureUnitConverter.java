@@ -17,15 +17,24 @@ public class TemperatureUnitConverter extends UnitConverter {
 
     @Override
     public float convert(int fromUnit, float fromValue, int toUnit) {
-        float toValue;
+        float toValue = 0;
         final float kelvinToCelsiusAdjust = -273.15f;
         if(fromUnit == TemperatureUnits.KELVIN && toUnit == TemperatureUnits.CELSIUS)
             toValue = fromValue + kelvinToCelsiusAdjust;
-        else if(fromUnit == TemperatureUnits.CELSIUS && toUnit == TemperatureUnits.KELVIN)
-            toValue = fromValue - kelvinToCelsiusAdjust;
-        else if(fromUnit == TemperatureUnits.KELVIN && toUnit == TemperatureUnits.FAHRENHEIT)
+        else if(fromUnit == TemperatureUnits.CELSIUS) {
+            if(toUnit == TemperatureUnits.KELVIN)
+                toValue = fromValue - kelvinToCelsiusAdjust;
+            else if(toUnit == TemperatureUnits.FAHRENHEIT) {
+                toValue = fromValue * 9f /5f + 32f;
+            }
+        } else if(fromUnit == TemperatureUnits.KELVIN && toUnit == TemperatureUnits.FAHRENHEIT)
             toValue = (fromValue + kelvinToCelsiusAdjust) * 9f /5f + 32f;
-        else if(fromUnit == toUnit)
+        else if(fromUnit == TemperatureUnits.FAHRENHEIT) {
+            if(toUnit == TemperatureUnits.KELVIN)
+                toValue = (fromValue - 32f) * 5f / 9f - kelvinToCelsiusAdjust;
+            else if(toUnit == TemperatureUnits.CELSIUS)
+                toValue = (fromValue - 32f) * 5f / 9f;
+        } else if(fromUnit == toUnit)
             toValue = fromValue;
         else
             toValue = 0;

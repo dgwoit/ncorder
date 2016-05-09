@@ -1,6 +1,8 @@
 package com.example.drock.n_corder;
 
 
+import android.util.Log;
+
 import java.util.Iterator;
 import java.util.List;
 
@@ -101,8 +103,14 @@ public class RegressionServices {
         double lnXYSum = 0;
         double sumLnXSquared = 0;
         double sumYSquared = 0;
+        double n = data.size();
         for(Measurement m:data) {
-            double lnX = Math.log(m.getTimestamp() / 1e9); //convert to seconds
+            double x = m.getTimestamp() / 1e9;
+            if(0 == x) {
+                n--;
+                continue;
+            }
+            double lnX = Math.log(x); //convert to seconds
             lnXSum += lnX;
             sumLnXSquared += lnX * lnX;
             double y = m.getValue();
@@ -110,7 +118,7 @@ public class RegressionServices {
             sumYSquared += y*y;
             lnXYSum += lnX * y;
         }
-        double n = data.size();
+
         double lnXMean = lnXSum / n;
         double yMean = ySum / n;
         double lnXYMean = lnXYSum / n;
@@ -137,9 +145,14 @@ public class RegressionServices {
         double sumLnY = 0;
         double sumLnYSquared = 0;
         double sumXLnY = 0;
+        double n = data.size();
         for(Measurement m:data) {
             double x = m.getTimestamp() / 1e9; //convert to seconds
             double y = m.getValue();
+            if(y == Double.NEGATIVE_INFINITY) {
+                n--;
+                continue;
+            }
             double lnY = Math.log(y);
             sumX += x;
             sumXSquared += x * x;
@@ -147,7 +160,7 @@ public class RegressionServices {
             sumLnYSquared += lnY * lnY;
             sumXLnY += x * lnY;
         }
-        double n = data.size();
+
         double meanX = sumX / n;
         double meanLnY = sumLnY / n;
         double meanSquareLnY = sumLnYSquared  / n;
@@ -207,17 +220,25 @@ public class RegressionServices {
         double sumLnY = 0;
         double sumLnYSquared = 0;
         double sumXLnY = 0;
+        double sign = 0;
+        double n = data.size();
         for(Measurement m:data) {
             double x = m.getTimestamp() / 1e9; //convert to seconds
             double y = m.getValue();
-            double lnY = Math.log(y);
+            if(y == 0) {
+                n--;
+                continue;
+            }
+            if(sign == 0) {
+                sign = Math.signum(y);
+            }
+            double lnY = Math.log(sign*y);
             sumX += x;
             sumXSquared += x * x;
             sumLnY += lnY;
             sumLnYSquared += lnY * lnY;
             sumXLnY += x * lnY;
         }
-        double n = data.size();
         double meanX = sumX / n;
         double meanLnY = sumLnY / n;
         double meanSquareX = sumXSquared / n;
@@ -226,8 +247,8 @@ public class RegressionServices {
         double sXX = meanSquareX - meanX * meanX;
         double sYY = meanSquareLnY - meanLnY * meanLnY;
         double sXY = meanSquareXLnY - meanX * meanLnY;
-        double b = sXY / sXX;
-        double a = Math.exp(meanLnY - Math.log(b) * meanX);
+        double b = Math.exp(sXY / sXX);
+        double a = sign * Math.exp(meanLnY - Math.log(b) * meanX);
         double r = sXY / (Math.sqrt(sXX*sYY));
         double[] results = new double[3];
         results[0] = a;
@@ -244,28 +265,41 @@ public class RegressionServices {
         double sumLnY = 0;
         double sumLnYSquared = 0;
         double sumLnXLnY = 0;
+        double sign = 0;
+        double n = data.size();
         for(Measurement m:data) {
             double x = m.getTimestamp() / 1e9; //convert to seconds
             double y = m.getValue();
-            double lnY = Math.log(y);
+            if(y == 0 || x == 0) {
+                n--;
+                continue;
+            }
+            if(sign == 0) {
+                sign = Math.signum(y);
+            }
+
+            double lnY = Math.log(sign*y);
             double lnX = Math.log(x);
+            assert(lnY != Double.NaN);
+            assert(lnX != Double.NaN);
             sumLnX += lnX;
             sumLnXSquared += lnX * lnX;
             sumLnY += lnY;
             sumLnYSquared += lnY * lnY;
             sumLnXLnY += lnX * lnY;
         }
-        double n = data.size();
         double meanLnX = sumLnX / n;
         double meanLnY = sumLnY / n;
         double meanSquareLnX = sumLnXSquared / n;
-        double meanSquareLnY = sumLnYSquared  / n;
-        double meanSquareLnXLnY = sumLnXLnY / n;
+        double meanSquareLnY = sumLnYSquared / n;
+        double meanLnXLnY = sumLnXLnY / n;
         double sXX = meanSquareLnX - meanLnX * meanLnX;
         double sYY = meanSquareLnY - meanLnY * meanLnY;
-        double sXY = meanSquareLnXLnY - meanLnX * meanLnY;
+        double sXY = meanLnXLnY - meanLnX * meanLnY;
         double b = sXY / sXX;
-        double a = Math.exp(meanLnY - Math.log(b) * meanLnX);
+        assert(b != Double.NaN);
+        double a = sign*Math.exp(meanLnY - b * meanLnX);
+        assert(a != Double.NaN);
         double r = sXY / (Math.sqrt(sXX*sYY));
         double[] results = new double[3];
         results[0] = a;
@@ -276,40 +310,34 @@ public class RegressionServices {
 
     //for y = a+b/x)
     // r is correlation:
-    double[] regressInverse(List<Measurement> data) {
-        double sumLnX = 0;
-        double sumLnXSquared = 0;
-        double sumLnY = 0;
-        double sumLnYSquared = 0;
-        double sumLnXLnY = 0;
-        for(Measurement m:data) {
-            double x = m.getTimestamp() / 1e9; //convert to seconds
-            double y = m.getValue();
-            double lnY = Math.log(y);
-            double lnX = Math.log(x);
-            sumLnX += lnX;
-            sumLnXSquared += lnX * lnX;
-            sumLnY += lnY;
-            sumLnYSquared += lnY * lnY;
-            sumLnXLnY += lnX * lnY;
+    Matrix regressInverse(List<Measurement> data) {
+        Matrix x = null;
+        int usableEntryCount = data.size();
+        for(Measurement m: data) {
+            if(m.getTimestamp() == 0)
+                usableEntryCount--;
         }
-        double n = data.size();
-        double meanLnX = sumLnX / n;
-        double meanLnY = sumLnY / n;
-        double meanSquareLnX = sumLnXSquared / n;
-        double meanSquareLnY = sumLnYSquared  / n;
-        double meanSquareLnXLnY = sumLnXLnY / n;
-        double sXX = meanSquareLnX - meanLnX * meanLnX;
-        double sYY = meanSquareLnY - meanLnY * meanLnY;
-        double sXY = meanSquareLnXLnY - meanLnX * meanLnY;
-        double b = sXY / sXX;
-        double a = Math.exp(meanLnY - b * meanLnX);
-        double r = sXY / (Math.sqrt(sXX*sYY));
-        double[] results = new double[3];
-        results[0] = a;
-        results[1] = b;
-        results[2] = r;
-        return results;
+        if(data.size() > 0) {
+            //long timeBase = data.get(0).getTimestamp();
+            double[][] aVals = new double[usableEntryCount][2];
+            double[][] bVals = new double[usableEntryCount][1];
+
+            for (int i = 0; i < data.size(); i++) {
+                double t = (data.get(i).getTimestamp()) / 1e9;
+                if(t == 0)
+                    continue;
+
+                aVals[i][1] = 1./t;
+                aVals[i][0] = 1.;
+                bVals[i][0] = data.get(i).getValue();
+            }
+
+            Matrix A = new Matrix(aVals);
+            Matrix b = new Matrix(bVals);
+            x = A.solve(b);
+        }
+
+        return x;
     }
 
     // For regressing damped sine waves
@@ -320,17 +348,31 @@ public class RegressionServices {
             double y = m.getValue();
             sumY += y;
         }
-        double n = data.size();
+        int n = data.size();
         double meanX = sumY / n;
 
-        int transformBlockSize = 256;
+        //count the zero crossings to get an idea of the frequency
+        int zeroCrossings = 0;
+        double testSign = Math.signum(data.get(0).getValue()-meanX);
+        for(Measurement m: data) {
+            double sign = Math.signum(m.getValue()-meanX);
+            if(sign != testSign) {
+                zeroCrossings++;
+                testSign = sign;
+            }
+        }
+        double timeBase = data.get(0).getTimestamp();
+        double duration = (data.get(n-1).getTimestamp() - timeBase) * 1e-9;
+        double frequency = (duration / zeroCrossings) / 2;
+        double phaseShift = 0; //need to calculate phase shift
+
+        /*int transformBlockSize = 256;
         RealDoubleFFT fft = new RealDoubleFFT(transformBlockSize);
 
         //process a block
         double[] block = new double[transformBlockSize];
         int i = 0, j = 0;
-
-        for(; j < transformBlockSize && i < n; i++, j++) {
+        for(i=0; j < transformBlockSize && i < n; i++, j++) {
             block[j] = data.get(i).getValue();
         }
         fft.ft(block);
@@ -352,15 +394,15 @@ public class RegressionServices {
             }
         }
         double c = frequency;
-        double d = sumPhase / transformBlockSize;
+        double d = sumPhase / transformBlockSize;*/
 
         //transform from decaying sinusoidal wave to a series of intensities
         double[] intensities = new double[data.size()];
         double[] times = new double[data.size()];
-        i = 0;
+        int i = 0;
         for(Measurement m:data) {
             double t = (m.getTimestamp() - timeBase) * 1e-9;
-            double phase = 2 * Math.PI * frequency * t;
+            double phase = 2 * Math.PI * frequency * t + phaseShift;
             double y = m.getValue();
             double real = Math.cos(phase) * y;
             double imag = Math.sin(phase) * y;
@@ -371,11 +413,12 @@ public class RegressionServices {
 
         double r = 0;
         double[] envelopeParams = regressEExponential(times, intensities);
-        double[] results = new double[4];
-        results[0] = envelopeParams[0];
-        results[1] = envelopeParams[1];
-        results[2] = c;
-        results[3] = d;
+        double[] results = new double[6];
+        results[0] = meanX;
+        results[2] = envelopeParams[0]; //amplitude
+        results[2] = envelopeParams[1]; //decay
+        results[3] = frequency;
+        results[4] = phaseShift;
         return results;
     }
 

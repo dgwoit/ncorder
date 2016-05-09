@@ -9,9 +9,9 @@ public class UnitSystemTable {
     public UnitSystemTable() {
         mUnitSystems.put(Units.UNKNOWN, new UnitSystemInfo(Units.UNKNOWN, "UNKNOWN", Units.UNKNOWN)
             .addUnit(Units.UNKNOWN, "Undefined", ""));
-        mUnitSystems.put(Units.ACCELERATION, new UnitSystemInfo(Units.ACCELERATION, "ACCELERATION", Units.ACCELERATION)
-                .addUnit(Units.ACCELERATION, "Meters per Second²", "m/s²")
-                .addUnit(Units.ACCELERATION, "Feet per Second²", "ft/s²"));
+        mUnitSystems.put(Units.ACCELERATION, new UnitSystemInfo(Units.ACCELERATION, "ACCELERATION", AccelerationUnits.METERS_PER_SEC_SEC)
+                .addUnit(AccelerationUnits.METERS_PER_SEC_SEC, "Meters per Second²", "m/s²")
+                .addUnit(AccelerationUnits.FEET_PER_SEC_SEC, "Feet per Second²", "ft/s²"));
         mUnitSystems.put(Units.ANGLE, new UnitSystemInfo(Units.ANGLE,"ANGLE",AngleUnits.RADIANS)
             .addUnit(AngleUnits.DEGREES, "Degrees", "º")
             .addUnit(AngleUnits.RADIANS, "Radians", "rad"));
@@ -19,7 +19,7 @@ public class UnitSystemTable {
             .addUnit(MagneticFieldUnits.TESLA, "Tesla", "T")
             .addUnit(MagneticFieldUnits.MICRO_TESLA, "Microtesla", "\u03BCT")
             .addUnit(MagneticFieldUnits.GAUSS, "Gauss", "G"));
-        mUnitSystems.put(Units.ANGULAR_SPEED, new UnitSystemInfo(Units.ANGULAR_SPEED,"ANGULAR SPEED",Units.ANGULAR_SPEED)
+        mUnitSystems.put(Units.ANGULAR_SPEED, new UnitSystemInfo(Units.ANGULAR_SPEED,"ANGULAR SPEED",AngularSpeedUnits.DEGREES_PER_SECOND)
             .addUnit(AngularSpeedUnits.RADIANS_PER_SECOND, "Radians per Second", "Rad/s")
             .addUnit(AngularSpeedUnits.DEGREES_PER_SECOND, "Degreess per Second", "º/s"));
         mUnitSystems.put(Units.PRESSURE, new UnitSystemInfo(Units.PRESSURE,"PRESSURE",PressureUnits.KILOPASCAL)
@@ -28,7 +28,8 @@ public class UnitSystemTable {
             .addUnit(PressureUnits.PSI, "Pounds per Square Inch", "psi"));
         mUnitSystems.put(Units.DISTANCE, new UnitSystemInfo(Units.DISTANCE,"DISTANCE",DistanceUnits.METERS)
             .addUnit(DistanceUnits.CENTIMETERS, "Centimeters", "cm")
-            .addUnit(DistanceUnits.METERS, "Meters", "m"));
+            .addUnit(DistanceUnits.METERS, "Meters", "m")
+            .addUnit(DistanceUnits.INCHES, "Inches", "in"));
         mUnitSystems.put(Units.RELATIVE_HUMIDITY, new UnitSystemInfo(Units.RELATIVE_HUMIDITY,"RELATIVE HUMIDITY",Units.RELATIVE_HUMIDITY)
             .addUnit(Units.RELATIVE_HUMIDITY, "Relative Humidity", "%"));
         mUnitSystems.put(Units.TEMPERATURE, new UnitSystemInfo(Units.TEMPERATURE,"TEMPERATURE",TemperatureUnits.KELVIN)
@@ -56,8 +57,10 @@ public class UnitSystemTable {
         );
         mUnitSystems.put(Units.FORCE, new UnitSystemInfo(Units.FORCE,"FORCE",Units.FORCE)
                 .addUnit(Units.FORCE, "Newtons", "N"));
-        mUnitSystems.put(Units.SPEED, new UnitSystemInfo(Units.SPEED,"SPEED",Units.SPEED)
-                .addUnit(Units.SPEED, "Meters per Second", "m/s"));
+        mUnitSystems.put(Units.SPEED, new UnitSystemInfo(Units.SPEED, "SPEED", SpeedUnits.METERS_PER_SECOND)
+                .addUnit(SpeedUnits.METERS_PER_SECOND, "Meters per Second", "m/s")
+                .addUnit(SpeedUnits.FEET_PER_SECOND, "Feet per Second", "ft/s")
+        );
     }
 
     public Map<Integer, UnitSystemInfo> getUnitSystems() {

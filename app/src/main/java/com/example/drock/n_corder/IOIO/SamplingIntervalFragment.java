@@ -11,7 +11,7 @@ import java.util.ArrayList;
  */
 public class SamplingIntervalFragment extends ListFragmentBase {
     public static Fragment newInstance() {
-        return new ListFragmentBase();
+        return new SamplingIntervalFragment();
     }
 
     @Override

@@ -51,11 +51,12 @@ public class IOIODeviceDriverManager {
         driverInfos.add(new IOIODeviceDriverInfo("Grove Hi Temp Probe - high temp", IOIOConnectionInfo.BUS_TYPE_A2D, GroveHiTempThermocouplePinA.class)); //since we don't enumerate composite devices
         driverInfos.add(new IOIODeviceDriverInfo("Grove Hi Temp Probe - ambient temp", IOIOConnectionInfo.BUS_TYPE_A2D, GroveHiTempThermocouplePinB.class)); //since we don't enumerate composite devices
         driverInfos.add(new IOIODeviceDriverInfo("Grove Differential Amplifier", IOIOConnectionInfo.BUS_TYPE_A2D, GroveDifferentialAmplifier.class));
-        driverInfos.add(new IOIODeviceDriverInfo("Grove Diff. Amp. + Load Cell", IOIOConnectionInfo.BUS_TYPE_A2D, GroveLoadCell.class));
+        //driverInfos.add(new IOIODeviceDriverInfo("Grove Diff. Amp. + Load Cell", IOIOConnectionInfo.BUS_TYPE_A2D, GroveLoadCell.class));
         driverInfos.add(new IOIODeviceDriverInfo("ACS712 Current Sensor", IOIOConnectionInfo.BUS_TYPE_A2D, ACS712CurrentSensor.class));
         driverInfos.add(new IOIODeviceDriverInfo("Grove 80cm Infrared Proximity Sensor", IOIOConnectionInfo.BUS_TYPE_A2D, GroveInfraredProximitySensor.class));
         driverInfos.add(new IOIODeviceDriverInfo("Grove Hall Sensor", IOIOConnectionInfo.BUS_TYPE_A2D, GroveHallSensor.class));
         driverInfos.add(new IOIODeviceDriverInfo("Analog to Digital 0-5 volts", IOIOConnectionInfo.BUS_TYPE_A2D, AnalogVoltageReader.class));
+        driverInfos.add(new IOIODeviceDriverInfo("Differential Input (volts)", IOIOConnectionInfo.BUS_TYPE_A2D, DifferentialInput.class));
     }
 
     // assigns/associates a driver instance to a connection

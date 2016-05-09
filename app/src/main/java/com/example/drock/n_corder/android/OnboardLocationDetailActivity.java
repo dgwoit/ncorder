@@ -2,6 +2,7 @@ package com.example.drock.n_corder.android;
 
 import android.content.Intent;
 import android.support.v4.app.Fragment;
+import android.view.MenuItem;
 
 import com.example.drock.n_corder.ListFragmentBase;
 import com.example.drock.n_corder.LocationManagerHelper;
@@ -30,5 +31,20 @@ public class OnboardLocationDetailActivity extends SingleFragmentActivity implem
             intent.putExtra(ParamNames.STREAM_NAME, streamMoniker);
             startActivity(intent);
         }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        if(id == android.R.id.home) {
+            finish();
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 }

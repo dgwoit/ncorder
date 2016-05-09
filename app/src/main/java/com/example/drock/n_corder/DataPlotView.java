@@ -187,11 +187,13 @@ public class DataPlotView extends View {
             determineVisibleSet();
             if (mVisibleDataSet != null && mVisibleDataSet.size() > 0) {
                 if (mTool != null)
-                    mTool.onDraw(canvas);
+                    mTool.onDraw(canvas, 1);
                 drawGraticule(canvas);
                 drawData(canvas);
                 drawXAxisLabel(canvas);
                 drawYAxisLabel(canvas);
+                if (mTool != null)
+                    mTool.onDraw(canvas, 2);
             }
 
             // Draw the text.

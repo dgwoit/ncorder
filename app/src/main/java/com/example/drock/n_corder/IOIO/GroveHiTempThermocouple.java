@@ -1,5 +1,7 @@
 package com.example.drock.n_corder.IOIO;
 
+import android.util.Log;
+
 import com.example.drock.n_corder.IMeasurementSink;
 import com.example.drock.n_corder.IMeasurementSource;
 import com.example.drock.n_corder.Measurement;
@@ -35,20 +37,33 @@ public class GroveHiTempThermocouple extends IOIODeviceDriver implements IMeasur
 
     @Override public void Update() {
         try {
-            float value;
-            if(mDefaultToAmbient)
-                value = mAmbientTempSensor.Read()*100f;
-            else {
-                value = getHiTemp();
+            float temperature;
+            if(mDefaultToAmbient) {
+                temperature = getAmbientTemp();
+            } else {
+                temperature = getHiTemp() + getAmbientTemp();
             }
-            value = mUnitConverter.convert(TemperatureUnits.CELSIUS, value);
-            update(new Measurement(value, System.nanoTime(), mUnitConverter.getDefaultUnit()));
+            temperature = mUnitConverter.convert(TemperatureUnits.CELSIUS, temperature);
+            update(new Measurement(temperature, System.nanoTime(), mUnitConverter.getDefaultUnit()));
         }
         catch(Exception e) {
-
+            Log.e("GroveHiTempTC", e.toString());
         }
         finally {
 
+        }
+    }
+
+    public float getAmbientTemp() {
+        try {
+            float a = mAmbientTempSensor.Read()*50f/33f;
+            float resistance = (float) (1f - a) * 10000f / a;
+            float temperature = 1f / ((float) Math.log(resistance / 10000f) / 3975f + 1f / 298.15f);
+            temperature -= 273.15f; //convert to celsius
+            return temperature;
+        } catch (Exception e) {
+            Log.e("GroveHiTempTC", e.toString());
+            return Float.NaN;
         }
     }
 
@@ -56,8 +71,13 @@ public class GroveHiTempThermocouple extends IOIODeviceDriver implements IMeasur
     protected static final float AMP_AV     = 54.16f;
 
     public float getHiTemp() throws Exception {
-        float value = mFilter.filter(mHiTempSensor.Read());
-        float mV = value/1023.0f*5.0f*1000f; //convert value to millivolts
+        float value = 0;
+        //value = mFilter.filter(mHiTempSensor.Read());
+        for(int i = 0; i < 32; i++) { //get higher precision (~5 bits sorta), and change noise to something brown-ish
+            value += mHiTempSensor.Read();
+        }
+        value /= 32f;
+        float mV = value*5.0f*1000f; //convert value to millivolts
         mV = (mV - VOL_OFFSET)/AMP_AV; //normlize value range
 
         float t = 0f;

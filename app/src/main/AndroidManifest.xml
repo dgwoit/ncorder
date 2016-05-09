@@ -144,6 +144,12 @@
             android:name=".android.OnboardLocationDetailActivity"
             android:label="Select a Source"
             android:theme="@style/AppTheme.NoActionBar"
+            android:parentActivityName=".MainActivity"
+            />
+        <activity
+            android:name=".IOIO.SamplingIntervalActivity"
+            android:label="Select a Sampling Interval"
+            android:theme="@style/AppTheme.NoActionBar"
             />
 
         <!--<receiver android:name=".LocationReceiver" android:exported="false">
@@ -156,6 +162,10 @@
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
+        <instrumentation android:name="android.test.InstrumentationTestRunner"
+            android:targetPackage="com.example.drock.n_corder"
+            android:label="android test runner" />
+        <uses-library android:name="android.test.runner" />
     </application>
 
 </manifest>

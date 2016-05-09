@@ -26,9 +26,16 @@ public class DataPlotRegressionTool {
         mSelectionPaint.setColor(Color.rgb(0x30, 0x30, 0x90));
     }
 
-    public void onDraw(Canvas canvas) {
+    public void onDraw(Canvas canvas, int layer) {
         if(mBounds != null) {
-            canvas.drawRect(mBounds, mSelectionPaint);
+            if(layer == 1)
+                canvas.drawRect(mBounds, mSelectionPaint);
+        } else { //draw instructions
+            if(layer == 2) {
+                String instructionText = "SELECT DATA TO ANALYZE";
+                float textWidth = mSelectionPaint.measureText(instructionText);
+                canvas.drawText("SELECT DATA TO ANALYZE", (canvas.getWidth() - textWidth) / 2, canvas.getHeight() / 2, mSelectionPaint);
+            }
         }
     }
 
@@ -94,8 +101,9 @@ public class DataPlotRegressionTool {
             results = regressor.regressPower(data);
             result.append(String.format("y = %f + %f/x, correlation=%f", results[0], results[1], results[2]));
             result.append("\n");
-            results = regressor.regressEExponentialSin(data);
-            result.append(String.format("y = %f * e^(%f*x))*sin(%f*x+%f)", results[0], results[1], results[2], results[3]));
+            //not ready for use
+            //results = regressor.regressEExponentialSin(data);
+            //result.append(String.format("y = %f * e^(%f*x))*sin(%f*x+%f)", results[0], results[1], results[2], results[3]));
 
         } else {
             result.append("No data selected for analysis");

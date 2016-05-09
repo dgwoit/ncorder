@@ -93,6 +93,8 @@ public class NumericViewFragment extends DataViewFragment implements IMeasuremen
         return view;
     }
 
+    public int getMenuResource() { return R.menu.menu_numeric_view; }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -188,7 +190,8 @@ public class NumericViewFragment extends DataViewFragment implements IMeasuremen
             return true;
         } catch (Exception e){
             Log.e("NumericViewFragment", "error setting value");
-            return false;
+            //return false;
+            return true;
         }
     }
 
